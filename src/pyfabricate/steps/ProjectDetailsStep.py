@@ -32,7 +32,7 @@ class ProjectDetails:
     keywords:    str = ''
 
 
-class ProjectDetailsPage(PageBase):
+class ProjectDetailsStep(PageBase):
 
     def __init__(self, parent: SizedPanel):
 

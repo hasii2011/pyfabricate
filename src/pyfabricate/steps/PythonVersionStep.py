@@ -12,7 +12,7 @@ from wx.lib.sized_controls import SizedPanel
 from pyfabricate.PageBase import PageBase
 
 
-class PythonVersionPage(PageBase):
+class PythonVersionStep(PageBase):
     def __init__(self, parent: SizedPanel):
 
         self.logger: Logger = getLogger(__name__)
