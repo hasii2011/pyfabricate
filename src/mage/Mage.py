@@ -1,3 +1,4 @@
+
 from typing import List
 from typing import NewType
 from typing import cast
@@ -23,6 +24,7 @@ from wx import ID_CANCEL
 from wx import STAY_ON_TOP
 
 from wx import NewIdRef as wxNewIdRef
+from wx.lib.buttons import ThemedGenBitmapTextButton
 
 from wx.lib.sized_controls import SizedDialog
 from wx.lib.sized_controls import SizedPanel
@@ -31,10 +33,15 @@ from mage.MagePage import MagePage
 
 from mage.resources.MageBitMap import embeddedImage as mageImage
 
+from mage.resources.cancel16 import embeddedImage as cancelButtonImage
+from mage.resources.next16 import embeddedImage as nextButtonImage
+from mage.resources.back16 import embeddedImage as backButtonImage
+
 from pyfabricate.steps.PageBase import PageBase
 
-BUTTON_NEXT_TEXT: str   = '&Next >'
-BUTTON_BACK_TEXT: str   = '&< Back'
+BUTTON_NEXT_TEXT:   str = 'Next'
+BUTTON_BACK_TEXT:   str = 'Back'
+BUTTON_CANCEL_TEXT: str = 'Cancel'
 BUTTON_FINISH_TEXT: str = 'Finish'
 
 MAGE_CANCELLED: int = wxNewIdRef()
@@ -146,7 +153,6 @@ class Mage(SizedDialog):
         if oldPage.validate() is False:
             return
 
-        # self._pages[self._pageNumber].Hide()
         oldPage.Hide()
         self._pageNumber += 1
 
@@ -162,22 +168,25 @@ class Mage(SizedDialog):
         self._btnBack.Enable()
 
         newPage: PageBase = self._pages[self._pageNumber]
-        # self._pages[self._pageNumber].Show()
         newPage.Show()
         self.GetContentsPane().Layout()
 
     # noinspection PyUnusedLocal
     def _onBack(self, event: CommandEvent):
 
-        self._pages[self._pageNumber].Hide()
+        oldPage: PageBase = self._pages[self._pageNumber]
+        oldPage.Hide()
+        # self._pages[self._pageNumber].Hide()
         self._pageNumber -= 1
 
         if self._pageNumber == 0:
             self._btnBack.Disable()
 
-        self._pages[self._pageNumber].Show()
-        self.GetContentsPane().Layout()
+        newPage: PageBase = self._pages[self._pageNumber]
+        newPage.Show()
+        # self._pages[self._pageNumber].Show()
 
+        self.GetContentsPane().Layout()
         self._btnNext.SetLabel(BUTTON_NEXT_TEXT)
 
     def _layoutWizardButtons(self, parent: SizedPanel):
@@ -186,9 +195,9 @@ class Mage(SizedDialog):
         buttonPanel.SetSizerType('horizontal')
         buttonPanel.SetSizerProps(expand=False, halign='right')  # expand False allows aligning right
 
-        self._btnCancel = Button(buttonPanel, id=ID_CANCEL, label='&Cancel')
-        self._btnNext   = Button(buttonPanel, label=BUTTON_NEXT_TEXT)
-        self._btnBack   = Button(buttonPanel, label=BUTTON_BACK_TEXT)
+        self._btnCancel = ThemedGenBitmapTextButton(buttonPanel, label=BUTTON_CANCEL_TEXT, bitmap=cancelButtonImage.GetBitmap(), id=ID_CANCEL)
+        self._btnNext   = ThemedGenBitmapTextButton(buttonPanel, label=BUTTON_NEXT_TEXT,   bitmap=nextButtonImage.GetBitmap())
+        self._btnBack   = ThemedGenBitmapTextButton(buttonPanel, label=BUTTON_BACK_TEXT,   bitmap=backButtonImage.GetBitmap(),)
 
         self._btnCancel.Bind(EVT_BUTTON, self._onCancel)
         self._btnNext.Bind(EVT_BUTTON,   self._onNext)
