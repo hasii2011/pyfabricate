@@ -19,7 +19,7 @@ from wx import wxEVT_TEXT_ENTER
 
 from wx.lib.sized_controls import SizedPanel
 
-from pyfabricate.PageBase import PageBase
+from pyfabricate.steps.PageBase import PageBase
 
 STANDARD_LABEL_FONT_SIZE: int = 12
 

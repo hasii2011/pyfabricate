@@ -12,7 +12,7 @@
 
 The basic command structure is:
 
-```
+```bash
 
 ```
 

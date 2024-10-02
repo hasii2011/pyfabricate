@@ -31,7 +31,7 @@ from mage.MagePage import MagePage
 
 from mage.resources.MageBitMap import embeddedImage as mageImage
 
-from pyfabricate.PageBase import PageBase
+from pyfabricate.steps.PageBase import PageBase
 
 BUTTON_NEXT_TEXT: str   = '&Next >'
 BUTTON_BACK_TEXT: str   = '&< Back'

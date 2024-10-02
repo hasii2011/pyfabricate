@@ -7,10 +7,10 @@ from wx import StaticLine
 from wx import StaticText
 from wx.lib.sized_controls import SizedPanel
 
-from pyfabricate.PageBase import PageBase
+from pyfabricate.steps.PageBase import PageBase
 
 
-class IntroductionPage(PageBase):
+class IntroductionStep(PageBase):
 
     TITLE_FONT_SIZE: int = 18
 
@@ -40,9 +40,9 @@ class IntroductionPage(PageBase):
     def _createPageTitle(self):
         """
         """
-        self._createLabel(label=IntroductionPage.TITLE, fontSize=IntroductionPage.TITLE_FONT_SIZE)
+        self._createLabel(label=IntroductionStep.TITLE, fontSize=IntroductionStep.TITLE_FONT_SIZE)
         StaticLine(parent=self, id=ID_ANY)
 
     def _createIntroductionText(self):
 
-        StaticText(parent=self, id=ID_ANY, label=IntroductionPage.INTRODUCTION_TEXT)
+        StaticText(parent=self, id=ID_ANY, label=IntroductionStep.INTRODUCTION_TEXT)

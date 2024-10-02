@@ -9,7 +9,7 @@ from wx import ComboBox
 
 from wx.lib.sized_controls import SizedPanel
 
-from pyfabricate.PageBase import PageBase
+from pyfabricate.steps.PageBase import PageBase
 
 
 class PythonVersionStep(PageBase):

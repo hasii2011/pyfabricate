@@ -14,10 +14,10 @@ from wx import StaticText
 
 from wx.lib.sized_controls import SizedPanel
 
-from pyfabricate.PageBase import PageBase
+from tests.mage.MageBase import MageBase
 
 
-class MageIntroductionPage(PageBase):
+class MageIntroductionPage(MageBase):
 
     TITLE: str = 'Introduction'
 

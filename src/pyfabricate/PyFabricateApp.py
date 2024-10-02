@@ -22,11 +22,12 @@ from mage.Mage import MAGE_FINISHED
 from mage.Mage import Mage
 from mage.MagePage import MagePage
 
-from pyfabricate.ProjectDetailsPage import ProjectDetailsPage
-from pyfabricate.ProjectsBasePage import ProjectsBasePage
 from pyfabricate.PyFabricateFrame import PyFabricateFrame
-from pyfabricate.IntroductionPage import IntroductionPage
-from pyfabricate.PythonVersionPage import PythonVersionPage
+
+from pyfabricate.steps.IntroductionStep import IntroductionStep
+from pyfabricate.steps.ProjectDetailsStep import ProjectDetailsStep
+from pyfabricate.steps.ProjectsBaseDirectoryPage import ProjectsBaseDirectoryPage
+from pyfabricate.steps.PythonVersionStep import PythonVersionStep
 
 from pyfabricate.resources.images.PyFabricateLogo import embeddedImage as pyFabricateLogo
 
@@ -86,10 +87,10 @@ class PyFabricateApp(App):
         logo: Bitmap = pyFabricateLogo.GetBitmap()
         mage: Mage   = Mage(parent=self._frame, title='PyFabricate Parameters', bitmap=logo)
         #
-        introPage:          MagePage = IntroductionPage(parent=mage.pageContainer)
-        projectDetailsPage: MagePage = ProjectDetailsPage(parent=mage.pageContainer)
-        projectBase:        MagePage = ProjectsBasePage(parent=mage.pageContainer)
-        pythonVersion:      MagePage = PythonVersionPage(parent=mage.pageContainer)
+        introPage:          MagePage = IntroductionStep(parent=mage.pageContainer)
+        projectDetailsPage: MagePage = ProjectDetailsStep(parent=mage.pageContainer)
+        projectBase:        MagePage = ProjectsBaseDirectoryPage(parent=mage.pageContainer)
+        pythonVersion:      MagePage = PythonVersionStep(parent=mage.pageContainer)
         #
         mage.addMage(magePage=introPage)
         mage.addMage(magePage=projectDetailsPage)

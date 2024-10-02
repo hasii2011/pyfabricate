@@ -4,12 +4,12 @@ from logging import getLogger
 
 from wx.lib.sized_controls import SizedPanel
 
-from pyfabricate.PageBase import PageBase
+from pyfabricate.steps.PageBase import PageBase
 
 from pyfabricate.components.DirectorySelector import DirectorySelector
 
 
-class ProjectsBasePage(PageBase):
+class ProjectsBaseDirectoryPage(PageBase):
 
     def __init__(self, parent: SizedPanel):
 
