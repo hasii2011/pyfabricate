@@ -151,7 +151,7 @@ class Mage(SizedDialog):
 
         oldPage: PageBase = self._pages[self._pageNumber]
         if oldPage.validate() is False:
-            return
+            return                  # Ugh.  short cut out
 
         oldPage.Hide()
         self._pageNumber += 1
@@ -176,15 +176,13 @@ class Mage(SizedDialog):
 
         oldPage: PageBase = self._pages[self._pageNumber]
         oldPage.Hide()
-        # self._pages[self._pageNumber].Hide()
-        self._pageNumber -= 1
 
+        self._pageNumber -= 1
         if self._pageNumber == 0:
             self._btnBack.Disable()
 
         newPage: PageBase = self._pages[self._pageNumber]
         newPage.Show()
-        # self._pages[self._pageNumber].Show()
 
         self.GetContentsPane().Layout()
         self._btnNext.SetLabel(BUTTON_NEXT_TEXT)

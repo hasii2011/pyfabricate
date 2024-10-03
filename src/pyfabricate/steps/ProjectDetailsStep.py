@@ -1,7 +1,6 @@
 
 from typing import Callable
 
-from dataclasses import dataclass
 from logging import Logger
 from logging import getLogger
 
@@ -19,24 +18,25 @@ from wx import wxEVT_TEXT_ENTER
 
 from wx.lib.sized_controls import SizedPanel
 
+from pyfabricate.ProjectDetails import ProjectDetails
 from pyfabricate.steps.PageBase import PageBase
 
 STANDARD_LABEL_FONT_SIZE: int = 12
 
 
-@dataclass
-class ProjectDetails:
-    name:        str = ''
-    ownerEmail:  str = ''
-    description: str = ''
-    keywords:    str = ''
-
-
 class ProjectDetailsStep(PageBase):
 
-    def __init__(self, parent: SizedPanel):
+    def __init__(self, parent: SizedPanel, projectDetails: ProjectDetails):
+        """
+
+        Args:
+            parent:           A parent panel
+            projectDetails:   Some starter details
+        """
 
         self.logger: Logger = getLogger(__name__)
+
+        self._projectDetails: ProjectDetails = projectDetails
 
         super().__init__(parent=parent)
 
@@ -46,12 +46,16 @@ class ProjectDetailsStep(PageBase):
         self._descriptionInput: TextCtrl = self._createInputPair(label='Project Description:', helpText='The project description')
         self._keywordsInput:    TextCtrl = self._createInputPair(label='Project Keywords:',    helpText='Comma separated list of keywords')
 
-        self._projectDetails: ProjectDetails = ProjectDetails()
-
+        self._setControlValues()
         self._bindControls()
 
     @property
     def projectDetails(self) -> ProjectDetails:
+        """
+        This is only valid when ProjectDetailsStep.validate() return True
+
+        Returns:  The control data
+        """
         return self._projectDetails
 
     def validate(self) -> bool:
@@ -81,7 +85,7 @@ class ProjectDetailsStep(PageBase):
         staticText: StaticText = self._createLabel(label)
         textInput:  TextCtrl   = TextCtrl(parent=self, style=TE_PROCESS_ENTER, size=Size(width=275, height=-1))
 
-        staticText.SetSizerProps(halign='center')
+        staticText.SetSizerProps(valign='center')
         textInput.SetSizerProps(halign='center', expand=True)
 
         textInput.SetHelpText(helpText=helpText)
@@ -94,6 +98,12 @@ class ProjectDetailsStep(PageBase):
         self._bindTextControl(textControl=self._ownerEmailInput,  callback=self._onValueChanged)
         self._bindTextControl(textControl=self._descriptionInput, callback=self._onValueChanged)
         self._bindTextControl(textControl=self._keywordsInput,    callback=self._onValueChanged)
+
+    def _setControlValues(self):
+        self._nameInput.SetValue(self._projectDetails.name)
+        self._ownerEmailInput.SetValue(self._projectDetails.ownerEmail)
+        self._descriptionInput.SetValue(self._projectDetails.description)
+        self._keywordsInput.SetValue(self._projectDetails.keywords)
 
     def _bindTextControl(self, textControl: TextCtrl, callback: Callable):
 
@@ -118,7 +128,7 @@ class ProjectDetailsStep(PageBase):
             assert False, 'Unknown event object'
 
         eventType  = event.GetEventType()
-        self.logger.warning(f'{eventType=}')
+        self.logger.debug(f'{eventType=}')
         if eventType == wxEVT_TEXT_ENTER:
             focusMove: bool = self.NavigateIn()
-            self.logger.warning(f'{focusMove=}')
+            self.logger.debug(f'{focusMove=}')

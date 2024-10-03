@@ -10,26 +10,16 @@ from os import sep as osSep
 from json import load as jsonLoad
 
 from wx import App
-from wx import Bitmap
 from wx import PyTimer
 
 from wx import Exit as wxExit
 
 from codeallybasic.ResourceManager import ResourceManager
 
-from mage.Mage import MAGE_CANCELLED
-from mage.Mage import MAGE_FINISHED
-from mage.Mage import Mage
-from mage.MagePage import MagePage
-
 from pyfabricate.PyFabricateFrame import PyFabricateFrame
+from pyfabricate.Settings import Settings
 
-from pyfabricate.steps.IntroductionStep import IntroductionStep
-from pyfabricate.steps.ProjectDetailsStep import ProjectDetailsStep
-from pyfabricate.steps.ProjectsBaseDirectoryPage import ProjectsBaseDirectoryPage
-from pyfabricate.steps.PythonVersionStep import PythonVersionStep
-
-from pyfabricate.resources.images.PyFabricateLogo import embeddedImage as pyFabricateLogo
+from pyfabricate.MageAdapter import MageAdapter
 
 
 class PyFabricateApp(App):
@@ -42,7 +32,9 @@ class PyFabricateApp(App):
 
     def __init__(self):
 
-        self.logger: Logger           = getLogger(__name__)
+        self.logger:    Logger   = getLogger(__name__)
+        self._settings: Settings = Settings()
+
         self._frame: PyFabricateFrame = cast(PyFabricateFrame, None)
         self._timer: PyTimer          = cast(PyTimer, None)
 
@@ -53,7 +45,7 @@ class PyFabricateApp(App):
         """
         self._setupApplicationLogging()
 
-        self._timer = PyTimer(self._startWizard)
+        self._timer = PyTimer(self._startMage)
         self._timer.Start(1000)
 
         return True
@@ -81,29 +73,11 @@ class PyFabricateApp(App):
         logging.logProcesses = False
         logging.logThreads   = False
 
-    def _startWizard(self):
+    def _startMage(self):
         self._timer.Stop()
 
-        logo: Bitmap = pyFabricateLogo.GetBitmap()
-        mage: Mage   = Mage(parent=self._frame, title='PyFabricate Parameters', bitmap=logo)
-        #
-        introPage:          MagePage = IntroductionStep(parent=mage.pageContainer)
-        projectDetailsPage: MagePage = ProjectDetailsStep(parent=mage.pageContainer)
-        projectBase:        MagePage = ProjectsBaseDirectoryPage(parent=mage.pageContainer)
-        pythonVersion:      MagePage = PythonVersionStep(parent=mage.pageContainer)
-        #
-        mage.addMage(magePage=introPage)
-        mage.addMage(magePage=projectDetailsPage)
-        mage.addMage(magePage=projectBase)
-        mage.addMage(magePage=pythonVersion)
-        #
-        status: int = mage.runWizard()
-        if status == MAGE_CANCELLED:
-            self.logger.info(f'Mage Cancelled')
-            wxExit()
-        elif status == MAGE_FINISHED:
-            self._frame.runOperations()
-
+        mageAdapter: MageAdapter = MageAdapter(parent=self._frame, completeCallback=self._frame.runOperations, cancelCallback=wxExit)
+        mageAdapter.run()
 
 if __name__ == "__main__":
 

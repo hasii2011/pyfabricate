@@ -21,8 +21,11 @@ from wx import StaticText
 
 from wx.lib.sized_controls import SizedFrame
 
-from codeallybasic.SecureConversions import SecureConversions
 from wx.lib.sized_controls import SizedPanel
+
+from pyfabricate.ProjectDetails import ProjectDetails
+
+from codeallybasic.SecureConversions import SecureConversions
 
 WINDOW_WIDTH:  int = 800
 WINDOW_HEIGHT: int = 400
@@ -57,7 +60,7 @@ class PyFabricateFrame(SizedFrame):
 
         self._makeMenus()
 
-    def runOperations(self):
+    def runOperations(self, projectDetails: ProjectDetails):
 
         panel: SizedPanel = self.GetContentsPane()
 
