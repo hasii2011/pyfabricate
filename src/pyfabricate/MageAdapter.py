@@ -40,12 +40,7 @@ class MageAdapter:
 
         self._settings: Settings = Settings()
 
-        projectDetails: ProjectDetails = ProjectDetails()
-        projectDetails.name          = self._settings.name
-        projectDetails.ownerEmail    = self._settings.ownerEmail
-        projectDetails.description   = self._settings.description
-        projectDetails.keywords      = self._settings.keywords
-        projectDetails.baseDirectory = self._settings.baseDirectory
+        projectDetails: ProjectDetails = self._fromSettings()
 
         logo: Bitmap = pyFabricateLogo.GetBitmap()
         mage: Mage   = Mage(parent=self._frame, title='PyFabricate Parameters', bitmap=logo)
@@ -75,10 +70,42 @@ class MageAdapter:
             updatedProjectDetails: ProjectDetails = self._projectDetailsStep.projectDetails
             updatedProjectDetails.baseDirectory   = self._projectBaseStep.baseDirectory
 
-            self._settings.name          = updatedProjectDetails.name
-            self._settings.ownerEmail    = updatedProjectDetails.ownerEmail
-            self._settings.description   = updatedProjectDetails.description
-            self._settings.keywords      = updatedProjectDetails.keywords
-            self._settings.baseDirectory = updatedProjectDetails.baseDirectory
+            self._settings = self._toSettings(updatedProjectDetails=updatedProjectDetails)
 
             self._completeCallback(updatedProjectDetails)
+
+    def _fromSettings(self) -> ProjectDetails:
+        """
+        Extract from the setting file
+
+        Returns:  A project details object
+        """
+
+        projectDetails: ProjectDetails = ProjectDetails()
+
+        projectDetails.name          = self._settings.name
+        projectDetails.ownerEmail    = self._settings.ownerEmail
+        projectDetails.description   = self._settings.description
+        projectDetails.keywords      = self._settings.keywords
+        projectDetails.baseDirectory = self._settings.baseDirectory
+
+        return projectDetails
+
+    def _toSettings(self, updatedProjectDetails: ProjectDetails) -> Settings:
+        """
+        Copies back from the updated project details after the developer interacts
+        with the mage
+
+        Args:
+            updatedProjectDetails:
+
+        Returns:  The singleton settings
+        """
+
+        self._settings.name          = updatedProjectDetails.name
+        self._settings.ownerEmail    = updatedProjectDetails.ownerEmail
+        self._settings.description   = updatedProjectDetails.description
+        self._settings.keywords      = updatedProjectDetails.keywords
+        self._settings.baseDirectory = updatedProjectDetails.baseDirectory
+
+        return self._settings
