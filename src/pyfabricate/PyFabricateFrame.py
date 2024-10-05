@@ -63,8 +63,11 @@ class PyFabricateFrame(SizedFrame):
     def runOperations(self, projectDetails: ProjectDetails):
 
         panel: SizedPanel = self.GetContentsPane()
+        panel.SetSizerType('vertical')
 
         StaticText(parent=panel, label='Operations are running')
+        StaticText(parent=panel, label=f'{projectDetails}')
+
         self.SetSize(Size(800, 600))
 
     def _makeMenus(self):

@@ -48,7 +48,7 @@ class MageAdapter:
         introPage:          MagePage                  = IntroductionStep(parent=mage.pageContainer)
         projectDetailsStep: ProjectDetailsStep        = ProjectDetailsStep(parent=mage.pageContainer, projectDetails=projectDetails)
         projectBaseStep:    ProjectsBaseDirectoryPage = ProjectsBaseDirectoryPage(parent=mage.pageContainer, baseDirectory=projectDetails.baseDirectory)
-        pythonVersion:      MagePage                  = PythonVersionStep(parent=mage.pageContainer)
+        pythonVersion:      PythonVersionStep         = PythonVersionStep(parent=mage.pageContainer)
         #
         mage.addMage(magePage=introPage)
         mage.addMage(magePage=projectDetailsStep)
@@ -59,6 +59,7 @@ class MageAdapter:
         self._projectDetailsStep: ProjectDetailsStep        = projectDetailsStep
         self._projectBaseStep:    ProjectsBaseDirectoryPage = projectBaseStep
         self._projectDetails:     ProjectDetails            = projectDetails
+        self._pythonVersion:      PythonVersionStep         = pythonVersion
 
     def run(self):
 
@@ -69,6 +70,7 @@ class MageAdapter:
         elif status == MAGE_FINISHED:
             updatedProjectDetails: ProjectDetails = self._projectDetailsStep.projectDetails
             updatedProjectDetails.baseDirectory   = self._projectBaseStep.baseDirectory
+            updatedProjectDetails.pythonVersion   = self._pythonVersion.selectedVersion
 
             self._settings = self._toSettings(updatedProjectDetails=updatedProjectDetails)
 

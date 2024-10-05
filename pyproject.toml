@@ -14,6 +14,7 @@ keywords = ['PyChartm', 'opinionated', 'skeleton', 'python',]
 
 dependencies = [
   'click>=8.1.7',
+  'semantic-version>=2.10.0',
   'codeallybasic>=1.4.0',
   'wxPython==4.2.2',
 ]

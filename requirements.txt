@@ -11,5 +11,6 @@ buildlackey==1.6.3
 
 click == 8.1.7
 PyGithub == 2.4.0
+semantic-version>=2.10.0
 codeallybasic>=1.4.0
 wxPython==4.2.2

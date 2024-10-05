@@ -1,13 +1,23 @@
 
 from typing import List
+from typing import cast
 
 from logging import Logger
 from logging import getLogger
 
-from wx import CB_DROPDOWN
+from wx import CENTER
 from wx import ComboBox
+from wx import CommandEvent
+from wx import EVT_COMBOBOX
+from wx import MessageDialog
+from wx import OK
 
 from wx.lib.sized_controls import SizedPanel
+
+from semantic_version import Version as SemanticVersion
+
+from pyfabricate.ExternalCommands import ExternalCommands
+from pyfabricate.ExternalCommands import SemanticVersions
 
 from pyfabricate.steps.PageBase import PageBase
 
@@ -21,7 +31,27 @@ class PythonVersionStep(PageBase):
 
         self._createLabel('Python Version:')
 
-        self._pythonVersionSelection: ComboBox = ComboBox(parent=self, value='', size=(160, -1), choices=self._getPythonVersions(), style=CB_DROPDOWN)
+        self._pythonVersionSelection: ComboBox = ComboBox(parent=self, value='', size=(160, -1), choices=self._getPythonVersions())
+
+        self._pythonVersionSelection.SetSelection(-1)
+
+        self.Bind(EVT_COMBOBOX, self._onSelectedVersion)
+
+        self._selectedVersion: SemanticVersion = cast(SemanticVersion, None)
+
+    def validate(self) -> bool:
+        if self._selectedVersion is None:
+            dlg = MessageDialog(parent=None, message=f'You must select a Python version', caption='Invalid Python Version', style=OK | CENTER)
+            dlg.ShowModal()
+            dlg.Destroy()
+
+            return False
+        else:
+            return True
+
+    @property
+    def selectedVersion(self) -> SemanticVersion:
+        return self._selectedVersion
 
     def _getPythonVersions(self) -> List[str]:
         """
@@ -30,18 +60,17 @@ class PythonVersionStep(PageBase):
         Returns:  A list of installed python versions
 
         """
-        pythonVersions: List[str] = [
-            'system',
-            '3.9.16',
-            '3.10.10',
-            '3.10.13',
-            '3.11.0',
-            '3.11.5',
-            '3.11.7',
-            '3.11.9',
-            '3.12.0',
-            '3.12.1',
-            '3.12.4',
-        ]
+        pythonVersions: SemanticVersions = ExternalCommands.getPythonVersions()
 
-        return pythonVersions
+        strVersions: List[str] = []
+
+        for pythonVersion in pythonVersions:
+            strVersions.append(str(pythonVersion))
+
+        return strVersions
+
+    def _onSelectedVersion(self, event: CommandEvent):
+
+        versionStr: str = event.GetString()
+
+        self._selectedVersion = SemanticVersion(versionStr)
