@@ -23,6 +23,8 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt update -y
+            whereis pyenv
+            whereis direnv
             pyenv install --list
             pip install --upgrade pip
             pip install wheel
