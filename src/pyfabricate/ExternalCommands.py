@@ -21,10 +21,6 @@ MAC_OS_PYENV_CMD:  str = f'{MAC_OS_PYENV_PATH}/{PYENV_CMD} versions'
 CmdOutput = NewType('CmdOutput', List[str])
 
 # noinspection SpellCheckingInspection
-"""
-    apt update -y
-    apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
-"""
 
 NON_PYTHON_VERSION:             str = 'system'
 LOCAL_PYTHON_VERSION_INDICATOR: str = '*'

@@ -13,16 +13,10 @@ from pyfabricate.InstallationChecker import InstallationChecker
 
 THE_GREAT_MAC_PLATFORM: str = 'macOS'
 
-JQ_CMD:              str = 'jq'
-MAC_OS_JQ_PATH:      str = f'/opt/homebrew/bin'
-NON_MAC_OS_JQ_PATH: str = f'/usr/bin/'
-
-MAC_OS_JQ_CMD:          str = f'{MAC_OS_JQ_PATH}/{JQ_CMD} --version'
-NON_MAC_OS_JQ_CMD:      str = f'{NON_MAC_OS_JQ_PATH}/{JQ_CMD} --version'
-
 PYENV_CMD:             str = 'pyenv'
+
 MAC_OS_PYENV_PATH:     str = f'/opt/homebrew/bin'
-NON_MAC_OS_PYENV_PATH: str = f'/usr/bin'
+NON_MAC_OS_PYENV_PATH: str = f'/home/circleci/.pyenv/bin'
 
 MAC_OS_PYENV_CMD:     str = f'{MAC_OS_PYENV_PATH}/{PYENV_CMD} versions'
 NON_MAC_OS_PYENV_CMD: str = f'{NON_MAC_OS_PYENV_PATH}/{PYENV_CMD} versions'
@@ -69,9 +63,9 @@ class TestInstallationChecker(UnitTestBase):
     def testRunCommandPass(self):
         platform: str = osPlatform(terse=True)
         if platform.startswith(THE_GREAT_MAC_PLATFORM) is True:
-            status: int = InstallationChecker.runCommand(MAC_OS_JQ_CMD)
+            status: int = InstallationChecker.runCommand(MAC_OS_PYENV_CMD)
         else:
-            status = InstallationChecker.runCommand(NON_MAC_OS_JQ_CMD)
+            status = InstallationChecker.runCommand(NON_MAC_OS_PYENV_CMD)
 
         self.assertEqual(0, status, 'This should pass')
 
