@@ -62,6 +62,7 @@ class TestInstallationChecker(UnitTestBase):
 
     def testRunCommandPass(self):
         platform: str = osPlatform(terse=True)
+        print(f'{platform=}')
         if platform.startswith(THE_GREAT_MAC_PLATFORM) is True:
             status: int = InstallationChecker.runCommand(MAC_OS_PYENV_CMD)
         else:
@@ -74,7 +75,10 @@ class TestInstallationChecker(UnitTestBase):
         platform: str = osPlatform(terse=True)
         if platform.startswith(THE_GREAT_MAC_PLATFORM) is True:
             completedData: CompletedData = InstallationChecker.runCommandReturnOutput(MAC_OS_PYENV_CMD)
-            self.assertEqual(0, completedData.status)
+        else:
+            completedData = InstallationChecker.runCommandReturnOutput(NON_MAC_OS_PYENV_CMD)
+
+        self.assertEqual(0, completedData.status)
 
     def testToList(self):
 
