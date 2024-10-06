@@ -19,9 +19,11 @@ The following is a directory graphic of a typical Python project which I manuall
     4. Project keywords
 3. Ask python version (list them - `pyenv versions`)
 4. Ask for the base directory for the developers python projects e.g. `PROJECTS_BASE=/Users/humberto.a.sanchez.ii/PycharmProjects`
-5. Set the requested version as local version `pyenv local <request version>`
-6. Create the local virtual environment `python -m venv pyenv-<PYTHON_VERSION>`
-7. Create the following files using our templates
+5. Create the project directory
+    ${PROJECTS_BASE}/{ProjectName}                               
+6. Set the requested version as local version `pyenv local <request version>`
+7. Create the local virtual environment `python -m venv pyenv-<PYTHON_VERSION>`
+8. Create the following files using our templates
     1.  .envrc  (Remind developer to execute direnv allow)
     2.  .mypy.ini
     3.  .gitignore
