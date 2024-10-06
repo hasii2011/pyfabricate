@@ -9,17 +9,12 @@ from unittest import main as unitTestMain
 from codeallybasic.UnitTestBase import UnitTestBase
 
 from pyfabricate.InstallationChecker import CompletedData
+
 from pyfabricate.InstallationChecker import InstallationChecker
 
-THE_GREAT_MAC_PLATFORM: str = 'macOS'
-
-PYENV_CMD:             str = 'pyenv'
-
-MAC_OS_PYENV_PATH:     str = f'/opt/homebrew/bin'
-NON_MAC_OS_PYENV_PATH: str = f'/home/circleci/.pyenv/bin'
-
-MAC_OS_PYENV_CMD:     str = f'{MAC_OS_PYENV_PATH}/{PYENV_CMD} versions'
-NON_MAC_OS_PYENV_CMD: str = f'{NON_MAC_OS_PYENV_PATH}/{PYENV_CMD} versions'
+from pyfabricate.Platform import MAC_OS_PYENV_CMD
+from pyfabricate.Platform import NON_MAC_OS_PYENV_CMD
+from pyfabricate.Platform import THE_GREAT_MAC_PLATFORM
 
 # noinspection SpellCheckingInspection
 TEST_STR: str = """
