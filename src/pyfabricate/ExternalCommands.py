@@ -64,7 +64,7 @@ class ExternalCommands:
 
                 if trimmedLine != NON_PYTHON_VERSION and not trimmedLine.startswith(LOCAL_PYTHON_VERSION_INDICATOR):
                     version: SemanticVersion = SemanticVersion(trimmedLine)
-                    print(f'{version=}')
+                    # print(f'{version=}')
                     pythonVersions.append(version)
         else:
             raise UnableToRetrievePythonVersionsException(stderr=cast(CmdOutput, completedData.stderr))

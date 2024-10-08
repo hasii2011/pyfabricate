@@ -1,8 +1,10 @@
 
+from typing import cast
+
 from logging import Logger
 from logging import getLogger
+
 from pathlib import Path
-from typing import cast
 
 from codeallybasic.ConfigurationProperties import ConfigurationNameValue
 from codeallybasic.ConfigurationProperties import ConfigurationProperties
@@ -15,15 +17,15 @@ from codeallybasic.ConfigurationProperties import configurationSetter
 
 from codeallybasic.SingletonV3 import SingletonV3
 
-# noinspection SpellCheckingInspection
-APPLICATION_NAME: str = 'pyfabricate'
+from pyfabricate.Constants import APPLICATION_NAME
 
 PROJECT_SECTION_NAME: SectionName = SectionName('Project')
 
 SECTION_PROJECT: Section = Section(
     [
         ConfigurationNameValue(name=PropertyName('name'),          defaultValue=f'projectName'),
-        ConfigurationNameValue(name=PropertyName('ownerEmail'),    defaultValue=f'hasii@icloud.com'),
+        ConfigurationNameValue(name=PropertyName('ownerName'),     defaultValue=f'Humberto A. Sanchez II'),
+        ConfigurationNameValue(name=PropertyName('ownerEmail'),    defaultValue=f'Humberto.A.Sanchez.II@gmail.com'),
         ConfigurationNameValue(name=PropertyName('description'),   defaultValue=f'This is a good project'),
         ConfigurationNameValue(name=PropertyName('keywords'),      defaultValue=f'keyword1,keyword2'),
         ConfigurationNameValue(name=PropertyName('baseDirectory'), defaultValue=f'{Path.home()}'),
@@ -59,6 +61,16 @@ class Settings(ConfigurationProperties, metaclass=SingletonV3):
     @name.setter
     @configurationSetter(sectionName=PROJECT_SECTION_NAME)
     def name(self, newValue: str):
+        pass
+
+    @property
+    @configurationGetter(sectionName=PROJECT_SECTION_NAME)
+    def ownerName(self) -> str:
+        return ''
+
+    @ownerName.setter
+    @configurationSetter(sectionName=PROJECT_SECTION_NAME)
+    def ownerName(self, newValue: str):
         pass
 
     @property

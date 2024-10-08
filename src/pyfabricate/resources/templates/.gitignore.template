@@ -1,0 +1,11 @@
+/shelf/
+/workspace.xml
+.idea/
+__pycache__/
+.DS_Store
+build/
+dist/
+/$PROJECT_NAME.egg-info/
+/pyenv-$PYTHON_VERSION/
+.python-version
+.envrc

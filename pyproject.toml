@@ -3,35 +3,32 @@ requires = ['setuptools', 'wheel']
 build-backend = "setuptools.build_meta"
 
 [project]
-name='pyfabricate'
+name='$PROJECT_NAME'
 dynamic = ["version"]
-description = 'Create an opinionated Python Project'
+description = '$DESCRIPTION'
 readme = "README.md"
 license = {text = 'GNU AFFERO GENERAL PUBLIC LICENSE'}
-authors = [{name = 'Humberto A. Sanchez II', email = 'Humberto.A.Sanchez.II@gmail.com'}]
-maintainers = [{name = 'Humberto A. Sanchez II', email = 'Humberto.A.Sanchez.II@gmail.com'}]
-keywords = ['PyChartm', 'opinionated', 'skeleton', 'python',]
+authors = [{name = '$OWNER', email = '$OWNER_EMAIL'}]
+maintainers = [{name = '$OWNER', email = '$OWNER_EMAIL'}]
+keywords = ['$KEYWORDS',]
 
 dependencies = [
-  'click>=8.1.7',
-  'semantic-version>=2.10.0',
   'codeallybasic>=1.4.0',
-  'wxPython==4.2.2',
 ]
 
 [project.urls]
-Repository = 'https://github.com/hasii2011/pyfabricate'
+Repository = 'https://github.com/hasii2011/$PROJECT_NAME'
 
 
 [tool.setuptools.packages.find]
 where = ['src']
 
 [tool.setuptools.package-data]
-'pyfabricate.resources' = ['loggingConfiguration.json']
+'$PROJECT_NAME.resources' = ['loggingConfiguration.json']
 
 [tool.setuptools.dynamic]
-version = {attr = 'pyfabricate.__version__'}
+version = {attr = '$PROJECT_NAME.__version__'}
 
 [project.scripts]
 
-pyfabricate = "pyfabricate.PyFabricate:commandHandler"
+pyfabricate = "$PROJECT_NAME.$MAINCLASS:commandHandler"

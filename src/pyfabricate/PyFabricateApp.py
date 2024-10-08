@@ -79,6 +79,7 @@ class PyFabricateApp(App):
         mageAdapter: MageAdapter = MageAdapter(parent=self._frame, completeCallback=self._frame.runOperations, cancelCallback=wxExit)
         mageAdapter.run()
 
+
 if __name__ == "__main__":
 
     pyFabricateApp:   PyFabricateApp   = PyFabricateApp()

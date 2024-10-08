@@ -86,6 +86,7 @@ class MageAdapter:
         projectDetails: ProjectDetails = ProjectDetails()
 
         projectDetails.name          = self._settings.name
+        projectDetails.ownerName     = self._settings.ownerName
         projectDetails.ownerEmail    = self._settings.ownerEmail
         projectDetails.description   = self._settings.description
         projectDetails.keywords      = self._settings.keywords
@@ -105,6 +106,7 @@ class MageAdapter:
         """
 
         self._settings.name          = updatedProjectDetails.name
+        self._settings.ownerName     = updatedProjectDetails.ownerName
         self._settings.ownerEmail    = updatedProjectDetails.ownerEmail
         self._settings.description   = updatedProjectDetails.description
         self._settings.keywords      = updatedProjectDetails.keywords

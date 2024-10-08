@@ -1,0 +1,10 @@
+wheel==0.43.0
+setuptools==69.2.0
+twine==5.0.0
+build == 1.2.2
+
+mypy == 1.11.2
+html-testRunner~=1.2.1
+
+# So Circle CI works
+buildlackey==1.6.3

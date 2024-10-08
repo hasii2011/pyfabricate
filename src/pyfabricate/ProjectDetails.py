@@ -9,6 +9,7 @@ from semantic_version import Version as SemanticVersion
 @dataclass
 class ProjectDetails:
     name:        str = ''
+    ownerName:   str = ''
     ownerEmail:  str = ''
     description: str = ''
     keywords:    str = ''

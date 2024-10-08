@@ -42,6 +42,7 @@ class ProjectDetailsStep(PageBase):
 
         self.SetSizerType('form')
         self._nameInput:        TextCtrl = self._createInputPair(label='Project Name:',        helpText='The project name')
+        self._ownerName:        TextCtrl = self._createInputPair(label='Project Owner Name:',  helpText='The boss')
         self._ownerEmailInput:  TextCtrl = self._createInputPair(label='Project Owner EMail:', helpText='The owner email in pyproject.toml')
         self._descriptionInput: TextCtrl = self._createInputPair(label='Project Description:', helpText='The project description')
         self._keywordsInput:    TextCtrl = self._createInputPair(label='Project Keywords:',    helpText='Comma separated list of keywords')
@@ -73,6 +74,7 @@ class ProjectDetailsStep(PageBase):
 
         valid: bool = True
         if (validateField(self._projectDetails.name, 'Project Name') is False or
+                validateField(self._projectDetails.ownerName, 'owner name') is False or
                 validateField(self._projectDetails.ownerEmail, 'eMail') is False or
                 validateField(self._projectDetails.description, 'description') is False or
                 validateField(self._projectDetails.keywords, 'Keywords') is False):
@@ -95,12 +97,14 @@ class ProjectDetailsStep(PageBase):
     def _bindControls(self):
 
         self._bindTextControl(textControl=self._nameInput,        callback=self._onValueChanged)
+        self._bindTextControl(textControl=self._ownerName,        callback=self._onValueChanged)
         self._bindTextControl(textControl=self._ownerEmailInput,  callback=self._onValueChanged)
         self._bindTextControl(textControl=self._descriptionInput, callback=self._onValueChanged)
         self._bindTextControl(textControl=self._keywordsInput,    callback=self._onValueChanged)
 
     def _setControlValues(self):
         self._nameInput.SetValue(self._projectDetails.name)
+        self._ownerName.SetValue(self._projectDetails.ownerName)
         self._ownerEmailInput.SetValue(self._projectDetails.ownerEmail)
         self._descriptionInput.SetValue(self._projectDetails.description)
         self._keywordsInput.SetValue(self._projectDetails.keywords)
@@ -118,6 +122,8 @@ class ProjectDetailsStep(PageBase):
         value:       str      = event.GetString()
         if eventObject is self._nameInput:
             self._projectDetails.name = value
+        elif eventObject is self._ownerName:
+            self._projectDetails.ownerName = value
         elif eventObject is self._ownerEmailInput:
             self._projectDetails.ownerEmail = value
         elif eventObject is self._descriptionInput:
