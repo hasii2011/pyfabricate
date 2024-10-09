@@ -10,6 +10,7 @@ from os import pathsep as osPathSep
 
 from pathlib import Path
 from typing import Callable
+from typing import List
 
 from codeallybasic.ConfigurationLocator import ConfigurationLocator
 from codeallybasic.ResourceManager import ResourceManager
@@ -26,6 +27,17 @@ TEMPLATE_PACKAGE_NAME:  str = 'pyfabricate.resources.templates'
 
 ProgressCallback = Callable[[str], None]
 
+SRC_PATH:       Path = Path('src')
+TESTS_PATH:     Path = Path('tests')
+RESOURCES_PATH: Path = Path('resources')
+
+DIRECTORY_PATHS: List[Path] = [
+    Path('.circleci'),
+    SRC_PATH,
+    TESTS_PATH,
+    TESTS_PATH / RESOURCES_PATH,
+]
+
 
 class Fabricator:
     def __init__(self, projectDetails: ProjectDetails):
@@ -40,6 +52,7 @@ class Fabricator:
 
         projectPath: Path = self._createProjectDirectory()
         progressCallback(f'Created: {projectPath}')
+        self._createProjectSkeletonDirectories(projectPath, progressCallback)
 
     def _createProjectDirectory(self) -> Path:
 
@@ -48,6 +61,28 @@ class Fabricator:
         projectPath.mkdir(parents=True, exist_ok=True)
 
         return projectPath
+
+    def _createProjectSkeletonDirectories(self, projectPath: Path, progressCallback: ProgressCallback):
+
+        progressCallback('Creating project skeleton')
+
+        for directoryPath in DIRECTORY_PATHS:
+            fullPath: Path = projectPath / directoryPath
+            fullPath.mkdir(parents=True, exist_ok=True)
+            progressCallback(f'Created: {fullPath}')
+
+        moduleNamePath:      Path = Path(f'{self._projectDetails.name}')
+        srcModuleDir:         Path = projectPath / SRC_PATH / moduleNamePath
+        testsModuleDir:       Path = projectPath / TESTS_PATH / moduleNamePath
+        srcModuleResouresDir: Path = srcModuleDir / RESOURCES_PATH
+
+        srcModuleDir.mkdir(parents=True, exist_ok=True)
+        testsModuleDir.mkdir(parents=True, exist_ok=True)
+        srcModuleResouresDir.mkdir(parents=True, exist_ok=True)
+
+        progressCallback(f'Created: {srcModuleDir}')
+        progressCallback(f'Created: {testsModuleDir}')
+        progressCallback(f'Created: {srcModuleResouresDir}')
 
     def _copyTemplatesToConfiguration(self):
         """
@@ -72,7 +107,7 @@ class Fabricator:
 
             for fqFileName in resourcePath.rglob('*.template'):
 
-                destinationPath: Path = configurationTemplatePath / fqFileName.stem
+                destinationPath: Path = configurationTemplatePath / fqFileName.name
 
                 destinationPath.write_bytes(fqFileName.read_bytes())
 
