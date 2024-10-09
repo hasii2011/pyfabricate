@@ -25,7 +25,7 @@ from wx.lib.sized_controls import SizedPanel
 
 from wx.richtext import RichTextCtrl
 
-from pyfabricate.Fabricator import Fabricator
+from pyfabricate.fabrication.Fabricator import Fabricator
 from pyfabricate.ProjectDetails import ProjectDetails
 
 from codeallybasic.SecureConversions import SecureConversions
@@ -80,7 +80,7 @@ class PyFabricateFrame(SizedFrame):
         self._addLineToConsole(f'{projectDetails}')
 
         fabricator: Fabricator = Fabricator(projectDetails=projectDetails)
-        fabricator.createProjectDirectory()
+        fabricator.fabricate(progressCallback=self._addLineToConsole)
 
     def _makeMenus(self):
         fileMenu: Menu = Menu()

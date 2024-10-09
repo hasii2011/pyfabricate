@@ -9,6 +9,7 @@ from importlib.resources import files
 from os import pathsep as osPathSep
 
 from pathlib import Path
+from typing import Callable
 
 from codeallybasic.ConfigurationLocator import ConfigurationLocator
 from codeallybasic.ResourceManager import ResourceManager
@@ -23,6 +24,9 @@ TEMPLATE_RESOURCE_PATH: str = f'pyfabricate{osPathSep}resources{osPathSep}templa
 TEMPLATE_PACKAGE_NAME:  str = 'pyfabricate.resources.templates'
 
 
+ProgressCallback = Callable[[str], None]
+
+
 class Fabricator:
     def __init__(self, projectDetails: ProjectDetails):
 
@@ -32,11 +36,18 @@ class Fabricator:
 
         self._copyTemplatesToConfiguration()
 
-    def createProjectDirectory(self):
+    def fabricate(self, progressCallback: ProgressCallback):
+
+        projectPath: Path = self._createProjectDirectory()
+        progressCallback(f'Created: {projectPath}')
+
+    def _createProjectDirectory(self) -> Path:
 
         projectPath: Path = self._projectDetails.baseDirectory / self._projectDetails.name
 
         projectPath.mkdir(parents=True, exist_ok=True)
+
+        return projectPath
 
     def _copyTemplatesToConfiguration(self):
         """
@@ -67,6 +78,8 @@ class Fabricator:
 
     def _computeResourcePath(self, resourcePath: str, packageName: str) -> Path:
         """
+        TODO:  This belongs in codeallybasic as part of the ResourceManager
+
         Assume we are in an app;  If not, then we are in development
         Args:
             resourcePath:  OS Path that matches the package name
