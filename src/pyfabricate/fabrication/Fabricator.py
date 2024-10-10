@@ -44,9 +44,10 @@ VERSION_VARIABLE:             str  = 'from %s._version import __version__'
 
 LOGGING_CONFIGURATION_TEMPLATE:      str = 'loggingConfiguration.json.template'
 TEST_LOGGING_CONFIGURATION_TEMPLATE: str = 'testLoggingConfiguration.json.template'
+CIRCLE_CI_TEMPLATE:                  str = 'config.yml.template'
 
 # These values the the string names that we substitute
-SUB_VAR_PROJECT_NAME: str = 'PROJECT_NAME'
+TOKEN_PROJECT_NAME: str = 'PROJECT_NAME'
 
 
 @dataclass
@@ -92,6 +93,7 @@ class Fabricator:
         self._createPythonPackageFiles(directories=directories, progressCallback=progressCallback)
         self._createVersioningCapabilities(directories=directories, progressCallback=progressCallback)
         self._createLoggingConfigurationFiles(directories=directories, progressCallback=progressCallback)
+        self._createCircleCIFile(directories=directories, progressCallback=progressCallback)
 
     def _createProjectDirectory(self) -> Path:
 
@@ -195,8 +197,16 @@ class Fabricator:
         destinationTestPath:                  Path = directories.projectPath / directories.testsResourcesPath / Path(TEST_LOGGING_CONFIGURATION_TEMPLATE).stem
 
         destinationTestPath.write_bytes(templateTestLoggingConfigurationFile.read_bytes())
-
         progressCallback(f'Created: {destinationTestPath}')
+
+    def _createCircleCIFile(self, directories: SkeletonDirectories, progressCallback: ProgressCallback):
+
+        templateCIFile:  Path = self._configurationTemplatePath / CIRCLE_CI_TEMPLATE
+        destinationPath: Path = directories.projectPath / CIRCLECI_PATH / Path(CIRCLE_CI_TEMPLATE).stem
+
+        destinationPath.write_bytes(templateCIFile.read_bytes())
+
+        progressCallback(f'Created {destinationPath}')
 
     def _copyTemplatesToConfiguration(self, configurationTemplatePath: Path):
         """
