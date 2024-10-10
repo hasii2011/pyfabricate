@@ -37,7 +37,9 @@ SRC_PATH:       Path = Path('src')
 TESTS_PATH:     Path = Path('tests')
 RESOURCES_PATH: Path = Path('resources')
 
-PACKAGE_DEFINITION_FILENAME: str = '__init__.py'
+PACKAGE_DEFINITION_FILENAME: str  = '__init__.py'
+VERSION_PY_TEMPLATE:         Path = Path('_version.py.template')
+VERSION_VARIABLE:            str  = 'from %s._version import __version__'
 
 
 @dataclass
@@ -81,6 +83,7 @@ class Fabricator:
 
         self._createSkeletonDirectories(directories=directories, progressCallback=progressCallback)
         self._createPythonPackageFiles(directories=directories, progressCallback=progressCallback)
+        self._createVersioningCapabilities(directories=directories, progressCallback=progressCallback)
 
     def _createProjectDirectory(self) -> Path:
 
@@ -133,6 +136,29 @@ class Fabricator:
                 fullPath: Path = directories.projectPath / directoryPath / PACKAGE_DEFINITION_FILENAME
                 fullPath.touch()
                 progressCallback(f'Created: {fullPath}')
+
+    def _createVersioningCapabilities(self, directories: SkeletonDirectories, progressCallback: ProgressCallback):
+        """
+        Moves the _version.py.template file in place
+        Updates module __init__.py file to make the module version number available
+
+        Args:
+            directories:
+            progressCallback:
+        """
+        templateVersionFile: Path = self._configurationTemplatePath / VERSION_PY_TEMPLATE
+        destinationPath:     Path = directories.projectPath / directories.srcModulePath / VERSION_PY_TEMPLATE.stem
+
+        destinationPath.write_bytes(templateVersionFile.read_bytes())
+        progressCallback(f'Created: {destinationPath}')
+
+        updatedVersionVariable: str = VERSION_VARIABLE % self._projectDetails.name.lower()
+        progressCallback(f'Updated version variable: `{updatedVersionVariable}`')
+
+        moduleInitPath: Path = directories.projectPath / directories.srcModulePath / PACKAGE_DEFINITION_FILENAME
+
+        moduleInitPath.write_text(updatedVersionVariable)
+        progressCallback(f'Updated {moduleInitPath}')
 
     def _copyTemplatesToConfiguration(self, configurationTemplatePath: Path):
         """
