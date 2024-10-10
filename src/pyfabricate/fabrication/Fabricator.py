@@ -1,7 +1,12 @@
 
+from typing import Callable
+from typing import Dict
+from typing import cast
+
 from logging import Logger
 from logging import getLogger
 
+from dataclasses import dataclass
 from importlib.abc import Traversable
 
 from importlib.resources import files
@@ -9,8 +14,6 @@ from importlib.resources import files
 from os import pathsep as osPathSep
 
 from pathlib import Path
-from typing import Callable
-from typing import List
 
 from codeallybasic.ConfigurationLocator import ConfigurationLocator
 from codeallybasic.ResourceManager import ResourceManager
@@ -20,23 +23,38 @@ from pyfabricate.Constants import TEMPLATES_DIRECTORY_NAME
 
 from pyfabricate.ProjectDetails import ProjectDetails
 
-
 TEMPLATE_RESOURCE_PATH: str = f'pyfabricate{osPathSep}resources{osPathSep}templates'
 TEMPLATE_PACKAGE_NAME:  str = 'pyfabricate.resources.templates'
 
 
-ProgressCallback = Callable[[str], None]
+ProgressCallback   = Callable[[str], None]
+SkeletonDictionary = Dict[str, Path]
 
+NO_PATH:        Path = cast(Path, None)
+
+CIRCLECI_PATH:  Path = Path('.circleci')
 SRC_PATH:       Path = Path('src')
 TESTS_PATH:     Path = Path('tests')
 RESOURCES_PATH: Path = Path('resources')
 
-DIRECTORY_PATHS: List[Path] = [
-    Path('.circleci'),
-    SRC_PATH,
-    TESTS_PATH,
-    TESTS_PATH / RESOURCES_PATH,
-]
+PACKAGE_DEFINITION_FILENAME: str = '__init__.py'
+
+
+@dataclass
+class SkeletonDirectories:
+    """
+    Hold the directory path names for the skeleton of a project
+    Apply the .projectPath value to get fully qualified paths
+    The individual variables describe examples of the values
+    """
+    projectPath:        Path = NO_PATH              # $HOME/tmp/DemoProject
+    circleCIPath:       Path = NO_PATH              # .circleci
+    srcPath:            Path = NO_PATH              # src
+    srcModulePath:      Path = NO_PATH              # src/demoproject
+    srcModuleResources: Path = NO_PATH              # src/demoproject/resources
+    testsPath:          Path = NO_PATH              # tests
+    testsModulePath:    Path = NO_PATH              # tests/demoproject
+    testsResourcesPath: Path = NO_PATH              # tests/resources
 
 
 class Fabricator:
@@ -45,14 +63,24 @@ class Fabricator:
         self.logger: Logger = getLogger(__name__)
 
         self._projectDetails: ProjectDetails = projectDetails
+        self._projectPath:    Path           = cast(Path, None)
 
-        self._copyTemplatesToConfiguration()
+        configurationLocator: ConfigurationLocator = ConfigurationLocator()
+
+        configPath:                      Path = configurationLocator.applicationPath(applicationName=APPLICATION_NAME)
+        self._configurationTemplatePath: Path = configPath / TEMPLATES_DIRECTORY_NAME
+
+        self._copyTemplatesToConfiguration(configurationTemplatePath=self._configurationTemplatePath)
 
     def fabricate(self, progressCallback: ProgressCallback):
 
-        projectPath: Path = self._createProjectDirectory()
-        progressCallback(f'Created: {projectPath}')
-        self._createProjectSkeletonDirectories(projectPath, progressCallback)
+        self._projectPath = self._createProjectDirectory()
+        progressCallback(f'Created: {self._projectPath}')
+
+        directories: SkeletonDirectories = self._computeSkeletonDirectories(self._projectPath, progressCallback)
+
+        self._createSkeletonDirectories(directories=directories, progressCallback=progressCallback)
+        self._createPythonPackageFiles(directories=directories, progressCallback=progressCallback)
 
     def _createProjectDirectory(self) -> Path:
 
@@ -62,29 +90,51 @@ class Fabricator:
 
         return projectPath
 
-    def _createProjectSkeletonDirectories(self, projectPath: Path, progressCallback: ProgressCallback):
+    def _computeSkeletonDirectories(self, projectPath: Path, progressCallback: ProgressCallback) -> SkeletonDirectories:
 
-        progressCallback('Creating project skeleton')
+        progressCallback('Computing project skeleton')
 
-        for directoryPath in DIRECTORY_PATHS:
-            fullPath: Path = projectPath / directoryPath
-            fullPath.mkdir(parents=True, exist_ok=True)
-            progressCallback(f'Created: {fullPath}')
+        moduleNamePath:        Path = Path(f'{self._projectDetails.name.lower()}')
 
-        moduleNamePath:      Path = Path(f'{self._projectDetails.name}')
-        srcModuleDir:         Path = projectPath / SRC_PATH / moduleNamePath
-        testsModuleDir:       Path = projectPath / TESTS_PATH / moduleNamePath
-        srcModuleResouresDir: Path = srcModuleDir / RESOURCES_PATH
+        directories: SkeletonDirectories = SkeletonDirectories()
 
-        srcModuleDir.mkdir(parents=True, exist_ok=True)
-        testsModuleDir.mkdir(parents=True, exist_ok=True)
-        srcModuleResouresDir.mkdir(parents=True, exist_ok=True)
+        directories.projectPath         = projectPath
+        directories.circleCIPath        = CIRCLECI_PATH
+        directories.srcPath             = SRC_PATH
+        directories.testsPath           = TESTS_PATH
+        directories.srcModulePath       = SRC_PATH / moduleNamePath
+        directories.srcModuleResources  = SRC_PATH / moduleNamePath / RESOURCES_PATH
+        directories.testsPath           = TESTS_PATH
+        directories.testsModulePath     = TESTS_PATH / moduleNamePath
+        directories.testsResourcesPath  = TESTS_PATH / RESOURCES_PATH
 
-        progressCallback(f'Created: {srcModuleDir}')
-        progressCallback(f'Created: {testsModuleDir}')
-        progressCallback(f'Created: {srcModuleResouresDir}')
+        return directories
 
-    def _copyTemplatesToConfiguration(self):
+    def _createSkeletonDirectories(self, directories: SkeletonDirectories, progressCallback: ProgressCallback):
+
+        skeletonDictionary: SkeletonDictionary = vars(directories)
+
+        for varName, directoryPath in skeletonDictionary.items():
+
+            if varName != 'projectPath':
+
+                fullPath: Path = directories.projectPath / directoryPath
+                fullPath.mkdir(parents=True, exist_ok=True)
+                progressCallback(f'Created: {fullPath}')
+
+    def _createPythonPackageFiles(self, directories: SkeletonDirectories, progressCallback: ProgressCallback):
+
+        skeletonDictionary: SkeletonDictionary = vars(directories)
+
+        for varName, directoryPath in skeletonDictionary.items():
+            if varName == 'projectPath' or varName == 'srcPath' or varName == 'circleCIPath':
+                pass
+            else:
+                fullPath: Path = directories.projectPath / directoryPath / PACKAGE_DEFINITION_FILENAME
+                fullPath.touch()
+                progressCallback(f'Created: {fullPath}')
+
+    def _copyTemplatesToConfiguration(self, configurationTemplatePath: Path):
         """
         Copy the templates to our configuration directory.  This allows end user/developer
         customization, of a sort.
@@ -92,11 +142,6 @@ class Fabricator:
         Only copied if they are not there already
 
         """
-        configurationLocator: ConfigurationLocator = ConfigurationLocator()
-
-        configPath:                Path = configurationLocator.applicationPath(applicationName=APPLICATION_NAME)
-        configurationTemplatePath: Path = configPath / TEMPLATES_DIRECTORY_NAME
-
         self.logger.info(f'{configurationTemplatePath}')
 
         if configurationTemplatePath.exists() is False:
