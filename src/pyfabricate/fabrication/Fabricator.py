@@ -1,4 +1,4 @@
-
+from string import Template
 from typing import Callable
 from typing import Dict
 from typing import cast
@@ -7,6 +7,7 @@ from logging import Logger
 from logging import getLogger
 
 from dataclasses import dataclass
+
 from importlib.abc import Traversable
 
 from importlib.resources import files
@@ -39,7 +40,13 @@ RESOURCES_PATH: Path = Path('resources')
 
 PACKAGE_DEFINITION_FILENAME: str  = '__init__.py'
 VERSION_PY_TEMPLATE:         Path = Path('_version.py.template')
-VERSION_VARIABLE:            str  = 'from %s._version import __version__'
+VERSION_VARIABLE:             str  = 'from %s._version import __version__'
+
+LOGGING_CONFIGURATION_TEMPLATE:      str = 'loggingConfiguration.json.template'
+TEST_LOGGING_CONFIGURATION_TEMPLATE: str = 'testLoggingConfiguration.json.template'
+
+# These values the the string names that we substitute
+SUB_VAR_PROJECT_NAME: str = 'PROJECT_NAME'
 
 
 @dataclass
@@ -84,6 +91,7 @@ class Fabricator:
         self._createSkeletonDirectories(directories=directories, progressCallback=progressCallback)
         self._createPythonPackageFiles(directories=directories, progressCallback=progressCallback)
         self._createVersioningCapabilities(directories=directories, progressCallback=progressCallback)
+        self._createLoggingConfigurationFiles(directories=directories, progressCallback=progressCallback)
 
     def _createProjectDirectory(self) -> Path:
 
@@ -159,6 +167,36 @@ class Fabricator:
 
         moduleInitPath.write_text(updatedVersionVariable)
         progressCallback(f'Updated {moduleInitPath}')
+
+    def _createLoggingConfigurationFiles(self, directories: SkeletonDirectories, progressCallback: ProgressCallback):
+
+        # Move the module template
+        #
+        templateLoggingConfigurationFile: Path = self._configurationTemplatePath / LOGGING_CONFIGURATION_TEMPLATE
+        destinationPath:                  Path = directories.projectPath / directories.srcModuleResources / Path(LOGGING_CONFIGURATION_TEMPLATE).stem
+
+        destinationPath.write_bytes(templateLoggingConfigurationFile.read_bytes())
+        progressCallback(f'Created: {destinationPath}')
+
+        subDict = {
+            'PROJECT_NAME': self._projectDetails.name.lower(),
+        }
+        # Make the substitutions
+        #
+        src:    Template = Template(destinationPath.read_text())
+        result: str      = src.substitute(subDict)
+
+        # Write the result back
+        #
+        destinationPath.write_text(result)
+
+        # move the test module template
+        templateTestLoggingConfigurationFile: Path = self._configurationTemplatePath / TEST_LOGGING_CONFIGURATION_TEMPLATE
+        destinationTestPath:                  Path = directories.projectPath / directories.testsResourcesPath / Path(TEST_LOGGING_CONFIGURATION_TEMPLATE).stem
+
+        destinationTestPath.write_bytes(templateTestLoggingConfigurationFile.read_bytes())
+
+        progressCallback(f'Created: {destinationTestPath}')
 
     def _copyTemplatesToConfiguration(self, configurationTemplatePath: Path):
         """

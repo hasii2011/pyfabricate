@@ -25,10 +25,6 @@
         "__main__": {
             "level": "INFO",
             "propagate": "False"
-        },
-        "$PROJECT_NAME": {
-            "level": "INFO",
-            "propagate": "False"
         }
     }
 }
