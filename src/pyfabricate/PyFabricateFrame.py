@@ -79,8 +79,8 @@ class PyFabricateFrame(SizedFrame):
         self._addLineToConsole('Operations are running')
         self._addLineToConsole(f'{projectDetails}')
 
-        fabricator: Fabricator = Fabricator(projectDetails=projectDetails)
-        fabricator.fabricate(progressCallback=self._addLineToConsole)
+        fabricator: Fabricator = Fabricator(projectDetails=projectDetails, progressCallback=self._addLineToConsole)
+        fabricator.fabricate()
 
     def _makeMenus(self):
         fileMenu: Menu = Menu()

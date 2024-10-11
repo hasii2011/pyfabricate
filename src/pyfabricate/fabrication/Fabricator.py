@@ -68,32 +68,35 @@ class SkeletonDirectories:
 
 
 class Fabricator:
-    def __init__(self, projectDetails: ProjectDetails):
+    def __init__(self, projectDetails: ProjectDetails, progressCallback: ProgressCallback):
+        """
+
+        Args:
+            projectDetails:         The details about the project we are creating
+            progressCallback:       Somewhere to report our progress as we go along
+        """
 
         self.logger: Logger = getLogger(__name__)
 
-        self._projectDetails: ProjectDetails = projectDetails
-        self._projectPath:    Path           = cast(Path, None)
+        self._projectDetails:   ProjectDetails   = projectDetails
+        self._progressCallback: ProgressCallback = progressCallback
 
+        self._projectPath:    Path                 = self._createProjectDirectory()
         configurationLocator: ConfigurationLocator = ConfigurationLocator()
 
-        configPath:                      Path = configurationLocator.applicationPath(applicationName=APPLICATION_NAME)
-        self._configurationTemplatePath: Path = configPath / TEMPLATES_DIRECTORY_NAME
+        configPath:                      Path                = configurationLocator.applicationPath(applicationName=APPLICATION_NAME)
+        self._configurationTemplatePath: Path                = configPath / TEMPLATES_DIRECTORY_NAME
+        self._directories:               SkeletonDirectories = self._computeSkeletonDirectories(self._projectPath)
 
         self._copyTemplatesToConfiguration(configurationTemplatePath=self._configurationTemplatePath)
 
-    def fabricate(self, progressCallback: ProgressCallback):
+    def fabricate(self):
 
-        self._projectPath = self._createProjectDirectory()
-        progressCallback(f'Created: {self._projectPath}')
-
-        directories: SkeletonDirectories = self._computeSkeletonDirectories(self._projectPath, progressCallback)
-
-        self._createSkeletonDirectories(directories=directories, progressCallback=progressCallback)
-        self._createPythonPackageFiles(directories=directories, progressCallback=progressCallback)
-        self._createVersioningCapabilities(directories=directories, progressCallback=progressCallback)
-        self._createLoggingConfigurationFiles(directories=directories, progressCallback=progressCallback)
-        self._createCircleCIFile(directories=directories, progressCallback=progressCallback)
+        self._createSkeletonDirectories()
+        self._createPythonPackageFiles()
+        self._createVersioningCapabilities()
+        self._createLoggingConfigurationFiles()
+        self._createCircleCIFile()
 
     def _createProjectDirectory(self) -> Path:
 
@@ -101,13 +104,15 @@ class Fabricator:
 
         projectPath.mkdir(parents=True, exist_ok=True)
 
+        self._progressCallback(f'Created: {projectPath}')
+
         return projectPath
 
-    def _computeSkeletonDirectories(self, projectPath: Path, progressCallback: ProgressCallback) -> SkeletonDirectories:
+    def _computeSkeletonDirectories(self, projectPath: Path) -> SkeletonDirectories:
 
-        progressCallback('Computing project skeleton')
+        self._progressCallback('Computing project skeleton')
 
-        moduleNamePath:        Path = Path(f'{self._projectDetails.name.lower()}')
+        moduleNamePath: Path = Path(f'{self._projectDetails.name.lower()}')
 
         directories: SkeletonDirectories = SkeletonDirectories()
 
@@ -123,61 +128,57 @@ class Fabricator:
 
         return directories
 
-    def _createSkeletonDirectories(self, directories: SkeletonDirectories, progressCallback: ProgressCallback):
+    def _createSkeletonDirectories(self):
 
-        skeletonDictionary: SkeletonDictionary = vars(directories)
+        skeletonDictionary: SkeletonDictionary = vars(self._directories)
 
         for varName, directoryPath in skeletonDictionary.items():
 
             if varName != 'projectPath':
 
                 directoryPath.mkdir(parents=True, exist_ok=True)
-                progressCallback(f'Created: {directoryPath}')
+                self._progressCallback(f'Created: {directoryPath}')
 
-    def _createPythonPackageFiles(self, directories: SkeletonDirectories, progressCallback: ProgressCallback):
+    def _createPythonPackageFiles(self):
 
-        skeletonDictionary: SkeletonDictionary = vars(directories)
+        skeletonDictionary: SkeletonDictionary = vars(self._directories)
 
         for varName, directoryPath in skeletonDictionary.items():
             if varName == 'projectPath' or varName == 'srcPath' or varName == 'circleCIPath':
                 pass
             else:
-                fullPath: Path = directories.projectPath / directoryPath / PACKAGE_DEFINITION_FILENAME
+                fullPath: Path = self._directories.projectPath / directoryPath / PACKAGE_DEFINITION_FILENAME
                 fullPath.touch()
-                progressCallback(f'Created: {fullPath}')
+                self._progressCallback(f'Created: {fullPath}')
 
-    def _createVersioningCapabilities(self, directories: SkeletonDirectories, progressCallback: ProgressCallback):
+    def _createVersioningCapabilities(self):
         """
         Moves the _version.py.template file in place
-        Updates module __init__.py file to make the module version number available
-
-        Args:
-            directories:
-            progressCallback:
+        Updates the module __init__.py file to make the module version number available
         """
         templateVersionFile: Path = self._configurationTemplatePath / VERSION_PY_TEMPLATE
-        destinationPath:     Path = directories.srcModulePath / VERSION_PY_TEMPLATE.stem
+        destinationPath:     Path = self._directories.srcModulePath / VERSION_PY_TEMPLATE.stem
 
         destinationPath.write_bytes(templateVersionFile.read_bytes())
-        progressCallback(f'Created: {destinationPath}')
+        self._progressCallback(f'Created: {destinationPath}')
 
         updatedVersionVariable: str = VERSION_VARIABLE % self._projectDetails.name.lower()
-        progressCallback(f'Updated version variable: `{updatedVersionVariable}`')
+        self._progressCallback(f'Updated version variable: `{updatedVersionVariable}`')
 
-        moduleInitPath: Path = directories.srcModulePath / PACKAGE_DEFINITION_FILENAME
+        moduleInitPath: Path = self._directories.srcModulePath / PACKAGE_DEFINITION_FILENAME
 
         moduleInitPath.write_text(updatedVersionVariable)
-        progressCallback(f'Updated {moduleInitPath}')
+        self._progressCallback(f'Updated {moduleInitPath}')
 
-    def _createLoggingConfigurationFiles(self, directories: SkeletonDirectories, progressCallback: ProgressCallback):
+    def _createLoggingConfigurationFiles(self):
 
         # Move the module template
         #
         templateLoggingConfigurationFile: Path = self._configurationTemplatePath / LOGGING_CONFIGURATION_TEMPLATE
-        destinationPath:                  Path = directories.srcModuleResources / Path(LOGGING_CONFIGURATION_TEMPLATE).stem
+        destinationPath:                  Path = self._directories.srcModuleResources / Path(LOGGING_CONFIGURATION_TEMPLATE).stem
 
         destinationPath.write_bytes(templateLoggingConfigurationFile.read_bytes())
-        progressCallback(f'Created: {destinationPath}')
+        self._progressCallback(f'Created: {destinationPath}')
 
         subDict = {
             'PROJECT_NAME': self._projectDetails.name.lower(),
@@ -193,26 +194,26 @@ class Fabricator:
 
         # move the test module template
         templateTestLoggingConfigurationFile: Path = self._configurationTemplatePath / TEST_LOGGING_CONFIGURATION_TEMPLATE
-        destinationTestPath:                  Path = directories.testsResourcesPath / Path(TEST_LOGGING_CONFIGURATION_TEMPLATE).stem
+        destinationTestPath:                  Path = self._directories.testsResourcesPath / Path(TEST_LOGGING_CONFIGURATION_TEMPLATE).stem
 
         destinationTestPath.write_bytes(templateTestLoggingConfigurationFile.read_bytes())
-        progressCallback(f'Created: {destinationTestPath}')
+        self._progressCallback(f'Created: {destinationTestPath}')
 
-    def _createCircleCIFile(self, directories: SkeletonDirectories, progressCallback: ProgressCallback):
+    def _createCircleCIFile(self):
 
         templateCIFile:  Path = self._configurationTemplatePath / CIRCLE_CI_TEMPLATE
-        destinationPath: Path = directories.circleCIPath / Path(CIRCLE_CI_TEMPLATE).stem
+        destinationPath: Path = self._directories.circleCIPath / Path(CIRCLE_CI_TEMPLATE).stem
 
         destinationPath.write_bytes(templateCIFile.read_bytes())
 
-        progressCallback(f'Created {destinationPath}')
+        self._progressCallback(f'Created {destinationPath}')
 
     def _copyTemplatesToConfiguration(self, configurationTemplatePath: Path):
         """
         Copy the templates to our configuration directory.  This allows end user/developer
         customization, of a sort.
 
-        Only copied if they are not there already
+        Only copied if the template directory does not exist
 
         """
         self.logger.info(f'{configurationTemplatePath}')
