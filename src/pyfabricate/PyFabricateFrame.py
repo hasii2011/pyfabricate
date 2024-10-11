@@ -99,6 +99,13 @@ class PyFabricateFrame(SizedFrame):
         self.Close(True)
 
     def _addLineToConsole(self, text: str):
+        """
+        Adds a line to our pseudo operations console.  Scrolls to end
+        so last line is always visible
+
+        Args:
+            text:  The line to append
+        """
 
         self._lineNumber += 1
 
@@ -110,3 +117,5 @@ class PyFabricateFrame(SizedFrame):
 
         self._console.WriteText(text=f'{text}')
         self._console.Newline()
+        carrotPosition: float = self._console.GetCaretPosition()        # Hee, hee
+        self._console.ShowPosition(carrotPosition)

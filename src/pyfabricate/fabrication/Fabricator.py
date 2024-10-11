@@ -54,17 +54,17 @@ TOKEN_PROJECT_NAME: str = 'PROJECT_NAME'
 class SkeletonDirectories:
     """
     Hold the directory path names for the skeleton of a project
-    Apply the .projectPath value to get fully qualified paths
+    These are fully qualified  paths
     The individual variables describe examples of the values
     """
     projectPath:        Path = NO_PATH              # $HOME/tmp/DemoProject
-    circleCIPath:       Path = NO_PATH              # .circleci
-    srcPath:            Path = NO_PATH              # src
-    srcModulePath:      Path = NO_PATH              # src/demoproject
-    srcModuleResources: Path = NO_PATH              # src/demoproject/resources
-    testsPath:          Path = NO_PATH              # tests
-    testsModulePath:    Path = NO_PATH              # tests/demoproject
-    testsResourcesPath: Path = NO_PATH              # tests/resources
+    circleCIPath:       Path = NO_PATH              # projectPath/.circleci
+    srcPath:            Path = NO_PATH              # projectPath/src
+    srcModulePath:      Path = NO_PATH              # projectPath/src/demoproject
+    srcModuleResources: Path = NO_PATH              # projectPath/src/demoproject/resources
+    testsPath:          Path = NO_PATH              # projectPath/tests
+    testsModulePath:    Path = NO_PATH              # projectPath/tests/demoproject
+    testsResourcesPath: Path = NO_PATH              # projectPath/tests/resources
 
 
 class Fabricator:
@@ -112,14 +112,14 @@ class Fabricator:
         directories: SkeletonDirectories = SkeletonDirectories()
 
         directories.projectPath         = projectPath
-        directories.circleCIPath        = CIRCLECI_PATH
-        directories.srcPath             = SRC_PATH
-        directories.testsPath           = TESTS_PATH
-        directories.srcModulePath       = SRC_PATH / moduleNamePath
-        directories.srcModuleResources  = SRC_PATH / moduleNamePath / RESOURCES_PATH
-        directories.testsPath           = TESTS_PATH
-        directories.testsModulePath     = TESTS_PATH / moduleNamePath
-        directories.testsResourcesPath  = TESTS_PATH / RESOURCES_PATH
+        directories.circleCIPath        = directories.projectPath / CIRCLECI_PATH
+        directories.srcPath             = directories.projectPath / SRC_PATH
+        directories.testsPath           = directories.projectPath / TESTS_PATH
+        directories.srcModulePath       = directories.projectPath / SRC_PATH / moduleNamePath
+        directories.srcModuleResources  = directories.projectPath / SRC_PATH / moduleNamePath / RESOURCES_PATH
+        directories.testsPath           = directories.projectPath / TESTS_PATH
+        directories.testsModulePath     = directories.projectPath / TESTS_PATH / moduleNamePath
+        directories.testsResourcesPath  = directories.projectPath / TESTS_PATH / RESOURCES_PATH
 
         return directories
 
@@ -131,9 +131,8 @@ class Fabricator:
 
             if varName != 'projectPath':
 
-                fullPath: Path = directories.projectPath / directoryPath
-                fullPath.mkdir(parents=True, exist_ok=True)
-                progressCallback(f'Created: {fullPath}')
+                directoryPath.mkdir(parents=True, exist_ok=True)
+                progressCallback(f'Created: {directoryPath}')
 
     def _createPythonPackageFiles(self, directories: SkeletonDirectories, progressCallback: ProgressCallback):
 
@@ -157,7 +156,7 @@ class Fabricator:
             progressCallback:
         """
         templateVersionFile: Path = self._configurationTemplatePath / VERSION_PY_TEMPLATE
-        destinationPath:     Path = directories.projectPath / directories.srcModulePath / VERSION_PY_TEMPLATE.stem
+        destinationPath:     Path = directories.srcModulePath / VERSION_PY_TEMPLATE.stem
 
         destinationPath.write_bytes(templateVersionFile.read_bytes())
         progressCallback(f'Created: {destinationPath}')
@@ -165,7 +164,7 @@ class Fabricator:
         updatedVersionVariable: str = VERSION_VARIABLE % self._projectDetails.name.lower()
         progressCallback(f'Updated version variable: `{updatedVersionVariable}`')
 
-        moduleInitPath: Path = directories.projectPath / directories.srcModulePath / PACKAGE_DEFINITION_FILENAME
+        moduleInitPath: Path = directories.srcModulePath / PACKAGE_DEFINITION_FILENAME
 
         moduleInitPath.write_text(updatedVersionVariable)
         progressCallback(f'Updated {moduleInitPath}')
@@ -175,7 +174,7 @@ class Fabricator:
         # Move the module template
         #
         templateLoggingConfigurationFile: Path = self._configurationTemplatePath / LOGGING_CONFIGURATION_TEMPLATE
-        destinationPath:                  Path = directories.projectPath / directories.srcModuleResources / Path(LOGGING_CONFIGURATION_TEMPLATE).stem
+        destinationPath:                  Path = directories.srcModuleResources / Path(LOGGING_CONFIGURATION_TEMPLATE).stem
 
         destinationPath.write_bytes(templateLoggingConfigurationFile.read_bytes())
         progressCallback(f'Created: {destinationPath}')
@@ -194,7 +193,7 @@ class Fabricator:
 
         # move the test module template
         templateTestLoggingConfigurationFile: Path = self._configurationTemplatePath / TEST_LOGGING_CONFIGURATION_TEMPLATE
-        destinationTestPath:                  Path = directories.projectPath / directories.testsResourcesPath / Path(TEST_LOGGING_CONFIGURATION_TEMPLATE).stem
+        destinationTestPath:                  Path = directories.testsResourcesPath / Path(TEST_LOGGING_CONFIGURATION_TEMPLATE).stem
 
         destinationTestPath.write_bytes(templateTestLoggingConfigurationFile.read_bytes())
         progressCallback(f'Created: {destinationTestPath}')
@@ -202,7 +201,7 @@ class Fabricator:
     def _createCircleCIFile(self, directories: SkeletonDirectories, progressCallback: ProgressCallback):
 
         templateCIFile:  Path = self._configurationTemplatePath / CIRCLE_CI_TEMPLATE
-        destinationPath: Path = directories.projectPath / CIRCLECI_PATH / Path(CIRCLE_CI_TEMPLATE).stem
+        destinationPath: Path = directories.circleCIPath / Path(CIRCLE_CI_TEMPLATE).stem
 
         destinationPath.write_bytes(templateCIFile.read_bytes())
 

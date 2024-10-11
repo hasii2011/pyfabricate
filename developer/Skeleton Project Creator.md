@@ -4,26 +4,33 @@ The following is a directory graphic of a typical Python project which I manuall
 
 ![SampleDocumentStructure](.//SampleDocumentStructure.png)
 
-## Assumptions
+## Opionated Assumptions
 
 - Python is managed via pyenv
 - direnv is installed
+- The project name is the same as the module package name
 
 ## Steps
 
 1. Ask project name (`PROJECT_NAME`)
+
 2. Ask the following information for pyproject.toml
     1. name (to appear in pyproject.toml)
-    2. Ask email (to app)
-    3. Project description
-    4. Project keywords
+    2. Owner name
+    3. Ask email (to app)
+    4. Project description
+    5. Project keywords
+
 3. Ask python version (list them - `pyenv versions`)
+
 4. Ask for the base directory for the developers python projects e.g. `PROJECTS_BASE=/Users/humberto.a.sanchez.ii/PycharmProjects`
+
 5. Create the project directory
     ${PROJECTS_BASE}/{ProjectName}                               
-6. Set the requested version as local version `pyenv local <request version>`
-7. Create the local virtual environment `python -m venv pyenv-<PYTHON_VERSION>`
-8. Create the following files using our templates
+
+6. Create the local virtual environment `python -m venv pyenv-<PYTHON_VERSION>`
+
+7. Create the following files using our templates
     1.  .envrc  (Remind developer to execute direnv allow)
     2.  .mypy.ini
     3.  .gitignore
@@ -34,6 +41,10 @@ The following is a directory graphic of a typical Python project which I manuall
     8.  src/_version.py
     9.  src/PROJECT_NAME/resources/loggingConfiguration.json
     10.  tests/PROJECT_NAME/resources/testLoggingConfiguration.json
+
+8. Set the requested version as local version `pyenv local <request version>`
+
+    
 
 ## Update _version.py 
 
@@ -95,7 +106,7 @@ codeallybasic == 1.4.0
 buildlackey==1.6.3
 ```
 
-### Pyproject.toml
+### pyproject.toml
 
 ```toml
 [build-system]
@@ -117,16 +128,16 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = 'https://github.com/GITHUBUSER NAME/PROJECT_NAME'
+Repository = 'https://github.com/GITHUBUSER NAME/$PROJECT_NAME'
 
 [tool.setuptools.packages.find]
 where = ['src']
 
 [tool.setuptools.package-data]
-'PROJECT_NAME.resources' = ['loggingConfiguration.json']
+'$PROJECT_NAME.resources' = ['loggingConfiguration.json']
 
 [tool.setuptools.dynamic]
-version = {attr = 'PROJECT_NAME.__version__'}
+version = {attr = '$PROJECT_NAME.__version__'}
 
 ```
 
@@ -194,7 +205,7 @@ jobs:
             "level": "INFO",
             "propagate": "False"
         },
-        "PROJECT_NAME": {
+        "$PROJECT_NAME": {
             "level": "INFO",
             "propagate": "False"
         }
