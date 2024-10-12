@@ -1,2 +1,2 @@
 export PROJECT=$PROJECT_NAME
-source $PYTHON_VERSION/bin/activate
+source pyenv-$PYTHON_VERSION/bin/activate

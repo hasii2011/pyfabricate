@@ -22,6 +22,7 @@ PYENV_CMD:         str = 'pyenv'
 MAC_OS_PYENV_PATH: str = f'/opt/homebrew/bin'
 MAC_OS_PYENV_CMD:  str = f'{MAC_OS_PYENV_PATH}/{PYENV_CMD} versions'
 
+MAC_OS_PYENV_LOCAL_CMD:   str = 'pyenv local '
 
 CmdOutput = NewType('CmdOutput', List[str])
 
@@ -42,9 +43,28 @@ class UnableToRetrievePythonVersionsException(Exception):
         return self._stderr
 
 
+class UnableToSetLocalPythonVersion(Exception):
+    pass
+
+
 class ExternalCommands:
     def __init__(self):
         self.logger: Logger = getLogger(__name__)
+
+    @classmethod
+    def createApplicationSpecificPythonVersion(cls, version: SemanticVersion):
+
+        platform: str = osPlatform(terse=True)
+
+        if platform.startswith(THE_GREAT_MAC_PLATFORM) is True:
+            cmd: str = f'{MAC_OS_PYENV_LOCAL_CMD} {str(version)}'
+            completedData: CompletedData = InstallationChecker.runCommandReturnOutput(cmd)
+            if completedData.status == 0:
+                pass
+            else:
+                raise UnableToSetLocalPythonVersion
+        else:
+            assert False, 'Oops, I only work on Mac OS'
 
     @classmethod
     def getPythonVersions(cls) -> SemanticVersions:

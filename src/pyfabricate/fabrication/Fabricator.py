@@ -16,6 +16,7 @@ from importlib.abc import Traversable
 from importlib.resources import files
 
 from os import pathsep as osPathSep
+from os import chdir as osChDir
 
 from pathlib import Path
 
@@ -24,6 +25,7 @@ from codeallybasic.ResourceManager import ResourceManager
 
 from pyfabricate.Constants import APPLICATION_NAME
 from pyfabricate.Constants import TEMPLATES_DIRECTORY_NAME
+from pyfabricate.ExternalCommands import ExternalCommands
 
 from pyfabricate.ProjectDetails import ProjectDetails
 
@@ -120,6 +122,7 @@ class Fabricator:
         self._createCircleCIFile()
         self._createProjectRootNoSubstitutionFiles()
         self._createProjectRootSubstitutionFiles()
+        self._createApplicationSpecificPythonVersion()
 
     def _createProjectDirectory(self) -> Path:
 
@@ -272,6 +275,12 @@ class Fabricator:
             #
             destinationPath.write_text(result)
             self._progressCallback(f'Created {destinationPath}')
+
+    def _createApplicationSpecificPythonVersion(self):
+
+        osChDir(self._projectPath)
+        ExternalCommands.createApplicationSpecificPythonVersion(version=self._projectDetails.pythonVersion)
+        self._progressCallback(f'Application specific version set to {self._projectDetails.pythonVersion}')
 
     def _copyTemplatesToConfiguration(self, configurationTemplatePath: Path):
         """
