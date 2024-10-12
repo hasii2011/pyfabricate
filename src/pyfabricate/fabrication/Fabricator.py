@@ -123,6 +123,7 @@ class Fabricator:
         self._createProjectRootNoSubstitutionFiles()
         self._createProjectRootSubstitutionFiles()
         self._createApplicationSpecificPythonVersion()
+        self._createProjectVirtualEnvironment()
 
     def _createProjectDirectory(self) -> Path:
 
@@ -281,6 +282,14 @@ class Fabricator:
         osChDir(self._projectPath)
         ExternalCommands.createApplicationSpecificPythonVersion(version=self._projectDetails.pythonVersion)
         self._progressCallback(f'Application specific version set to {self._projectDetails.pythonVersion}')
+
+    def _createProjectVirtualEnvironment(self):
+
+        osChDir(self._projectPath)
+        virtualEnv: str = ExternalCommands.createVirtualEnvironment(version=self._projectDetails.pythonVersion)
+
+        self._progressCallback(f'Created virtual environment for {self._projectDetails.pythonVersion}')
+        self._progressCallback(f'{virtualEnv}')
 
     def _copyTemplatesToConfiguration(self, configurationTemplatePath: Path):
         """

@@ -18,11 +18,15 @@ from pyfabricate.Platform import THE_GREAT_MAC_PLATFORM
 
 SemanticVersions = NewType('SemanticVersions', List[SemanticVersion])
 
+VIRTUAL_ENVIRONMENT_MARKER: str = 'pyenv-'
+
 PYENV_CMD:         str = 'pyenv'
 MAC_OS_PYENV_PATH: str = f'/opt/homebrew/bin'
 MAC_OS_PYENV_CMD:  str = f'{MAC_OS_PYENV_PATH}/{PYENV_CMD} versions'
 
 MAC_OS_PYENV_LOCAL_CMD:   str = 'pyenv local '
+
+MAC_OS_CREATE_VIRTUAL_ENV_CMD: str = 'python -m venv '
 
 CmdOutput = NewType('CmdOutput', List[str])
 
@@ -47,12 +51,50 @@ class UnableToSetLocalPythonVersion(Exception):
     pass
 
 
+class UnableToCreateVirtualEnvironment(Exception):
+    pass
+
+
 class ExternalCommands:
     def __init__(self):
         self.logger: Logger = getLogger(__name__)
 
     @classmethod
+    def createVirtualEnvironment(cls, version: SemanticVersion) -> str:
+        """
+        Assumes the caller has appropriately set the current directory
+
+        Args:
+            version: The Python version
+
+        Returns:  The name of the subdirectory where the we created the virtual environment
+
+        """
+        platform: str = osPlatform(terse=True)
+
+        if platform.startswith(THE_GREAT_MAC_PLATFORM) is True:
+
+            subdirName:    str           = f'{VIRTUAL_ENVIRONMENT_MARKER}{str(version)}'
+            cmd:           str           = f'{MAC_OS_CREATE_VIRTUAL_ENV_CMD} {subdirName}'
+            completedData: CompletedData = InstallationChecker.runCommandReturnOutput(cmd)
+            if completedData.status == 0:
+                pass
+            else:
+                raise UnableToCreateVirtualEnvironment
+        else:
+            assert False, 'Oops, I only work on Mac OS'
+
+        return subdirName
+
+    @classmethod
     def createApplicationSpecificPythonVersion(cls, version: SemanticVersion):
+        """
+        Assumes the caller has appropriately set the current directory
+
+        Args:
+            version: The Python version
+
+        """
 
         platform: str = osPlatform(terse=True)
 
