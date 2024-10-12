@@ -49,13 +49,26 @@ LOGGING_CONFIGURATION_TEMPLATE:      str = 'loggingConfiguration.json.template'
 TEST_LOGGING_CONFIGURATION_TEMPLATE: str = 'testLoggingConfiguration.json.template'
 CIRCLE_CI_TEMPLATE:                  str = 'config.yml.template'
 
-NO_SUBSTITUTION_FILES: List[Path] = [
+NO_TOKENS_SUBSTITUTION_TEMPLATES: List[Path] = [
     Path('LICENSE.template'),
     Path('.mypi.ini.template'),
     Path('requirements.txt.template'),
 ]
+
+TOKEN_SUBSTITUTION_TEMPLATES: List[Path] = [
+    Path('README.md.template'),
+    Path('.gitignore.template'),
+    Path('pyproject.toml.template'),
+    Path('.envrc.template'),
+]
+
 # These values the the string names that we substitute
-TOKEN_PROJECT_NAME: str = 'PROJECT_NAME'
+TOKEN_PROJECT_NAME:   str = 'PROJECT_NAME'
+TOKEN_PYTHON_VERSION: str = 'PYTHON_VERSION'
+TOKEN_OWNER_NAME:     str = 'OWNER_NAME'
+TOKEN_OWNER_EMAIL:    str = 'OWNER_EMAIL'
+TOKEN_DESCRIPTION:    str = 'DESCRIPTION'
+TOKEN_KEYWORDS:       str = 'KEYWORDS'
 
 
 @dataclass
@@ -105,7 +118,8 @@ class Fabricator:
         self._createVersioningCapabilities()
         self._createLoggingConfigurationFiles()
         self._createCircleCIFile()
-        self._createNoSubstitutionFiles()
+        self._createProjectRootNoSubstitutionFiles()
+        self._createProjectRootSubstitutionFiles()
 
     def _createProjectDirectory(self) -> Path:
 
@@ -190,12 +204,12 @@ class Fabricator:
         self._progressCallback(f'Created: {destinationPath}')
 
         subDict = {
-            'PROJECT_NAME': self._projectDetails.name.lower(),
+            TOKEN_PROJECT_NAME: self._projectDetails.name.lower(),
         }
         # Make the substitutions
         #
-        src:    Template = Template(destinationPath.read_text())
-        result: str      = src.substitute(subDict)
+        template: Template = Template(destinationPath.read_text())
+        result:   str      = template.substitute(subDict)
 
         # Write the result back
         #
@@ -217,12 +231,12 @@ class Fabricator:
 
         self._progressCallback(f'Created {destinationPath}')
 
-    def _createNoSubstitutionFiles(self):
+    def _createProjectRootNoSubstitutionFiles(self):
         """
         These are files that we do no token substitution
         """
 
-        for templateFile in NO_SUBSTITUTION_FILES:
+        for templateFile in NO_TOKENS_SUBSTITUTION_TEMPLATES:
 
             templatePath:    Path = self._configurationTemplatePath / templateFile
             destinationPath: Path = self._directories.projectPath / templateFile.stem
@@ -230,6 +244,34 @@ class Fabricator:
             destinationPath.write_bytes(templatePath.read_bytes())
 
             self._progressCallback(f'Created: {destinationPath}')
+
+    def _createProjectRootSubstitutionFiles(self):
+        """
+
+        """
+        tokenDict = {
+            TOKEN_PYTHON_VERSION: self._projectDetails.pythonVersion,
+            TOKEN_PROJECT_NAME:   self._projectDetails.name.lower(),
+            TOKEN_OWNER_NAME:     self._projectDetails.ownerName,
+            TOKEN_OWNER_EMAIL:    self._projectDetails.ownerEmail,
+            TOKEN_DESCRIPTION:    self._projectDetails.description,
+            TOKEN_KEYWORDS:       self._projectDetails.keywords,
+        }
+        for templateFile in TOKEN_SUBSTITUTION_TEMPLATES:
+            templatePath:    Path = self._configurationTemplatePath / templateFile
+            destinationPath: Path = self._directories.projectPath / templateFile.stem
+            # Copy the template
+            destinationPath.write_bytes(templatePath.read_bytes())
+            #
+            # Make the substitutions
+
+            template: Template = Template(destinationPath.read_text())
+            result:   str      = template.substitute(tokenDict)
+
+            # Write the result back
+            #
+            destinationPath.write_text(result)
+            self._progressCallback(f'Created {destinationPath}')
 
     def _copyTemplatesToConfiguration(self, configurationTemplatePath: Path):
         """

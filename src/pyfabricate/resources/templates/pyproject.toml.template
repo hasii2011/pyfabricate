@@ -8,9 +8,9 @@ dynamic = ["version"]
 description = '$DESCRIPTION'
 readme = "README.md"
 license = {text = 'GNU AFFERO GENERAL PUBLIC LICENSE'}
-authors = [{name = '$OWNER', email = '$OWNER_EMAIL'}]
-maintainers = [{name = '$OWNER', email = '$OWNER_EMAIL'}]
-keywords = ['$KEYWORDS',]
+authors = [{name = '$OWNER_NAME', email = '$OWNER_EMAIL'}]
+maintainers = [{name = '$OWNER_NAME', email = '$OWNER_EMAIL'}]
+keywords = ['$KEYWORDS']
 
 dependencies = [
   'codeallybasic>=1.4.0',
@@ -31,4 +31,4 @@ version = {attr = '$PROJECT_NAME.__version__'}
 
 [project.scripts]
 
-pyfabricate = "$PROJECT_NAME.$MAINCLASS:commandHandler"
+pyfabricate = "$PROJECT_NAME.MainClass:commandHandler"
