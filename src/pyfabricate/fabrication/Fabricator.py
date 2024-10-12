@@ -1,10 +1,13 @@
-from string import Template
+
 from typing import Callable
 from typing import Dict
+from typing import List
 from typing import cast
 
 from logging import Logger
 from logging import getLogger
+
+from string import Template
 
 from dataclasses import dataclass
 
@@ -46,6 +49,11 @@ LOGGING_CONFIGURATION_TEMPLATE:      str = 'loggingConfiguration.json.template'
 TEST_LOGGING_CONFIGURATION_TEMPLATE: str = 'testLoggingConfiguration.json.template'
 CIRCLE_CI_TEMPLATE:                  str = 'config.yml.template'
 
+NO_SUBSTITUTION_FILES: List[Path] = [
+    Path('LICENSE.template'),
+    Path('.mypi.ini.template'),
+    Path('requirements.txt.template'),
+]
 # These values the the string names that we substitute
 TOKEN_PROJECT_NAME: str = 'PROJECT_NAME'
 
@@ -97,6 +105,7 @@ class Fabricator:
         self._createVersioningCapabilities()
         self._createLoggingConfigurationFiles()
         self._createCircleCIFile()
+        self._createNoSubstitutionFiles()
 
     def _createProjectDirectory(self) -> Path:
 
@@ -207,6 +216,20 @@ class Fabricator:
         destinationPath.write_bytes(templateCIFile.read_bytes())
 
         self._progressCallback(f'Created {destinationPath}')
+
+    def _createNoSubstitutionFiles(self):
+        """
+        These are files that we do no token substitution
+        """
+
+        for templateFile in NO_SUBSTITUTION_FILES:
+
+            templatePath:    Path = self._configurationTemplatePath / templateFile
+            destinationPath: Path = self._directories.projectPath / templateFile.stem
+
+            destinationPath.write_bytes(templatePath.read_bytes())
+
+            self._progressCallback(f'Created: {destinationPath}')
 
     def _copyTemplatesToConfiguration(self, configurationTemplatePath: Path):
         """
