@@ -6,8 +6,11 @@ The following is a directory graphic of a typical Python project which I manuall
 
 ## Opionated Assumptions
 
-- Python is managed via pyenv
-- direnv is installed
+- The developer uses [HomeBrew](https://brew.sh) to install the opinionated dependencies.
+    - Python is managed via pyenv (For use in the created virtual environments)
+    - direnv is installed
+    - The developer installed a [HomeBrew](https://brew.sh) version of Python (For creating the virtual environments)
+
 - The project name is the same as the module package name
 
 ## Steps

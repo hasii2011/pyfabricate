@@ -22,10 +22,14 @@ from pathlib import Path
 
 from codeallybasic.ConfigurationLocator import ConfigurationLocator
 from codeallybasic.ResourceManager import ResourceManager
+from wx import CENTER
+from wx import MessageDialog
+from wx import OK
 
 from pyfabricate.Constants import APPLICATION_NAME
 from pyfabricate.Constants import TEMPLATES_DIRECTORY_NAME
 from pyfabricate.ExternalCommands import ExternalCommands
+from pyfabricate.ExternalCommands import UnableToCreateVirtualEnvironment
 
 from pyfabricate.ProjectDetails import ProjectDetails
 
@@ -286,10 +290,15 @@ class Fabricator:
     def _createProjectVirtualEnvironment(self):
 
         osChDir(self._projectPath)
-        virtualEnv: str = ExternalCommands.createVirtualEnvironment(version=self._projectDetails.pythonVersion)
+        try:
+            virtualEnv: str = ExternalCommands.createVirtualEnvironment(version=self._projectDetails.pythonVersion)
 
-        self._progressCallback(f'Created virtual environment for {self._projectDetails.pythonVersion}')
-        self._progressCallback(f'{virtualEnv}')
+            self._progressCallback(f'Created virtual environment for {self._projectDetails.pythonVersion}')
+            self._progressCallback(f'{virtualEnv}')
+        except UnableToCreateVirtualEnvironment as e:
+            dlg = MessageDialog(parent=None, message=f'{e.stderr}', caption='Virtual Environment', style=OK | CENTER)
+            dlg.ShowModal()
+            dlg.Destroy()
 
     def _copyTemplatesToConfiguration(self, configurationTemplatePath: Path):
         """

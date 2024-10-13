@@ -26,14 +26,12 @@ MAC_OS_PYENV_CMD:  str = f'{MAC_OS_PYENV_PATH}/{PYENV_CMD} versions'
 
 MAC_OS_PYENV_LOCAL_CMD:   str = 'pyenv local '
 
-MAC_OS_CREATE_VIRTUAL_ENV_CMD: str = 'python -m venv '
-
-CmdOutput = NewType('CmdOutput', List[str])
-
-# noinspection SpellCheckingInspection
+MAC_OS_CREATE_VIRTUAL_ENV_CMD: str = '/opt/homebrew/bin/python3 -m venv'
 
 NON_PYTHON_VERSION:             str = 'system'
 LOCAL_PYTHON_VERSION_INDICATOR: str = '*'
+
+CmdOutput = NewType('CmdOutput', List[str])
 
 
 class UnableToRetrievePythonVersionsException(Exception):
@@ -52,7 +50,13 @@ class UnableToSetLocalPythonVersion(Exception):
 
 
 class UnableToCreateVirtualEnvironment(Exception):
-    pass
+    def __init__(self, stderr: CmdOutput):
+
+        self._stderr: CmdOutput = stderr
+
+    @property
+    def stderr(self) -> CmdOutput:
+        return self._stderr
 
 
 class ExternalCommands:
@@ -80,7 +84,7 @@ class ExternalCommands:
             if completedData.status == 0:
                 pass
             else:
-                raise UnableToCreateVirtualEnvironment
+                raise UnableToCreateVirtualEnvironment(stderr=CmdOutput(completedData.stderr))
         else:
             assert False, 'Oops, I only work on Mac OS'
 

@@ -1,0 +1,2 @@
+rm -rf build dist PyFabricator.egg-info
+python -O setup.py py2app --iconfile pyfabricate/resources/pyfabricate.icns
