@@ -16,8 +16,8 @@ from wx.lib.sized_controls import SizedPanel
 
 from semantic_version import Version as SemanticVersion
 
-from pyfabricate.ExternalCommands import ExternalCommands
-from pyfabricate.ExternalCommands import SemanticVersions
+from pyfabricate.oswrapper.ExternalCommands import ExternalCommands
+from pyfabricate.oswrapper.ExternalCommands import SemanticVersions
 
 from pyfabricate.steps.PageBase import PageBase
 

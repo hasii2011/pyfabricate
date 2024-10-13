@@ -28,8 +28,8 @@ from wx import OK
 
 from pyfabricate.Constants import APPLICATION_NAME
 from pyfabricate.Constants import TEMPLATES_DIRECTORY_NAME
-from pyfabricate.ExternalCommands import ExternalCommands
-from pyfabricate.ExternalCommands import UnableToCreateVirtualEnvironment
+from pyfabricate.oswrapper.ExternalCommands import ExternalCommands
+from pyfabricate.oswrapper.ExternalCommands import UnableToCreateVirtualEnvironment
 
 from pyfabricate.ProjectDetails import ProjectDetails
 

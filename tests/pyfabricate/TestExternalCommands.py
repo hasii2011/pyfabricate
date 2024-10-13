@@ -4,9 +4,9 @@ from unittest import main as unitTestMain
 
 from codeallybasic.UnitTestBase import UnitTestBase
 
-from pyfabricate.ExternalCommands import ExternalCommands
-from pyfabricate.ExternalCommands import SemanticVersions
-from pyfabricate.ExternalCommands import UnableToRetrievePythonVersionsException
+from pyfabricate.oswrapper.ExternalCommands import ExternalCommands
+from pyfabricate.oswrapper.ExternalCommands import SemanticVersions
+from pyfabricate.oswrapper.ExternalCommands import UnableToRetrievePythonVersionsException
 
 
 class TestExternalCommands(UnitTestBase):

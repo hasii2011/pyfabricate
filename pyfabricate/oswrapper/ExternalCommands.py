@@ -10,8 +10,8 @@ from platform import platform as osPlatform
 
 from semantic_version import Version as SemanticVersion
 
-from pyfabricate.InstallationChecker import CompletedData
-from pyfabricate.InstallationChecker import InstallationChecker
+from pyfabricate.oswrapper.InstallationChecker import CompletedData
+from pyfabricate.oswrapper.InstallationChecker import InstallationChecker
 
 from pyfabricate.Platform import NON_MAC_OS_PYENV_CMD
 from pyfabricate.Platform import THE_GREAT_MAC_PLATFORM
