@@ -6,12 +6,21 @@ from typing import NewType
 from logging import Logger
 from logging import getLogger
 
+from os import linesep as osLineSep
+
+from subprocess import CompletedProcess
+
+from subprocess import run as subProcessRun
+
 from platform import platform as osPlatform
+
 
 from semantic_version import Version as SemanticVersion
 
-from pyfabricate.oswrapper.InstallationChecker import CompletedData
-from pyfabricate.oswrapper.InstallationChecker import InstallationChecker
+from pyfabricate.oswrapper.CompletedData import CompletedData
+from pyfabricate.oswrapper.CompletedData import OutputLines
+from pyfabricate.oswrapper.CompletedData import StdErr
+from pyfabricate.oswrapper.CompletedData import StdOut
 
 from pyfabricate.Platform import NON_MAC_OS_PYENV_CMD
 from pyfabricate.Platform import THE_GREAT_MAC_PLATFORM
@@ -80,7 +89,7 @@ class ExternalCommands:
 
             subdirName:    str           = f'{VIRTUAL_ENVIRONMENT_MARKER}{str(version)}'
             cmd:           str           = f'{MAC_OS_CREATE_VIRTUAL_ENV_CMD} {subdirName}'
-            completedData: CompletedData = InstallationChecker.runCommandReturnOutput(cmd)
+            completedData: CompletedData = ExternalCommands.runCommandReturnOutput(cmd)
             if completedData.status == 0:
                 pass
             else:
@@ -104,7 +113,7 @@ class ExternalCommands:
 
         if platform.startswith(THE_GREAT_MAC_PLATFORM) is True:
             cmd: str = f'{MAC_OS_PYENV_LOCAL_CMD} {str(version)}'
-            completedData: CompletedData = InstallationChecker.runCommandReturnOutput(cmd)
+            completedData: CompletedData = ExternalCommands.runCommandReturnOutput(cmd)
             if completedData.status == 0:
                 pass
             else:
@@ -120,9 +129,9 @@ class ExternalCommands:
         platform: str = osPlatform(terse=True)
 
         if platform.startswith(THE_GREAT_MAC_PLATFORM) is True:
-            completedData: CompletedData = InstallationChecker.runCommandReturnOutput(MAC_OS_PYENV_CMD)
+            completedData: CompletedData = ExternalCommands.runCommandReturnOutput(MAC_OS_PYENV_CMD)
         else:
-            completedData = InstallationChecker.runCommandReturnOutput(NON_MAC_OS_PYENV_CMD)
+            completedData = ExternalCommands.runCommandReturnOutput(NON_MAC_OS_PYENV_CMD)
 
         if completedData.status == 0:
             for outputLine in completedData.stdout:
@@ -136,3 +145,81 @@ class ExternalCommands:
             raise UnableToRetrievePythonVersionsException(stderr=cast(CmdOutput, completedData.stderr))
 
         return pythonVersions
+
+    @classmethod
+    def checkInstallation(cls, commandToCheck) -> bool:
+        ans:    bool = False
+        status: int  = ExternalCommands.runCommand(commandToCheck)
+        if status == 0:
+            ans = True
+        return ans
+
+    @classmethod
+    def runCommand(cls, programToRun: str) -> int:
+        """
+
+        Args:
+            programToRun:  What must be executed
+
+        Returns:  The status return of the executed program
+        """
+        completedProcess: CompletedProcess = subProcessRun([programToRun], shell=True, capture_output=True, text=True, check=False)
+        return completedProcess.returncode
+
+    @classmethod
+    def runCommandReturnOutput(cls, programToRun: str) -> CompletedData:
+
+        completedProcess: CompletedProcess = subProcessRun([programToRun], shell=True, capture_output=True, text=True, check=False)
+        if completedProcess.returncode == 0:
+            stdout: StdOut = ExternalCommands.toStdOut(completedProcess.stdout)
+            return CompletedData(status=0, stdout=stdout)
+
+        else:
+            stderr: StdErr = ExternalCommands.toStdErr(completedProcess.stderr)
+            return CompletedData(status=completedProcess.returncode, stderr=stderr)
+
+    @classmethod
+    def toStdOut(cls, cmdOutput: str) -> StdOut:
+        """
+        Syntactic sugar
+
+        Args:
+            cmdOutput:
+
+        Returns: Perfectly typed list
+
+        """
+        return ExternalCommands.toList(cmdOutput)
+
+    @classmethod
+    def toStdErr(cls, cmdOutput: str) -> StdErr:
+        """
+        Syntactic sugar
+
+        Args:
+            cmdOutput:
+
+        Returns: Perfectly typed list
+
+        """
+        return ExternalCommands.toList(cmdOutput)
+
+    @classmethod
+    def toList(cls, cmdOutput: str) -> OutputLines:
+        """
+        Does not return empty string entries
+
+        Args:
+            cmdOutput: The newline separated string that `subProcessRun` returns
+
+        Returns:  A list of strings
+
+        """
+        strList:     List[str] = cmdOutput.split(f'{osLineSep}')
+        outputLines: OutputLines = OutputLines([])
+
+        for stuff in strList:
+            if len(stuff) > 0:
+                outputLines.append(stuff)
+
+        return outputLines
