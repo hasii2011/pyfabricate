@@ -20,6 +20,7 @@ from wx.lib.sized_controls import SizedPanel
 
 from pyfabricate.ProjectDetails import ProjectDetails
 from pyfabricate.steps.PageBase import PageBase
+from pyfabricate.steps.Validator import validateEmail
 
 STANDARD_LABEL_FONT_SIZE: int = 12
 
@@ -78,6 +79,11 @@ class ProjectDetailsStep(PageBase):
                 validateField(self._projectDetails.ownerEmail, 'eMail') is False or
                 validateField(self._projectDetails.description, 'description') is False or
                 validateField(self._projectDetails.keywords, 'Keywords') is False):
+            valid = False
+        elif validateEmail(self._projectDetails.ownerEmail) is False:
+            eDlg = MessageDialog(parent=None, message=f'Incorrectly formatted email', caption='Invalid', style=OK | CENTER)
+            eDlg.ShowModal()
+            eDlg.Destroy()
             valid = False
 
         return valid
