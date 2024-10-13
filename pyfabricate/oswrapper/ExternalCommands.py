@@ -1,4 +1,5 @@
-
+from pathlib import Path
+from typing import Dict
 from typing import cast
 from typing import List
 from typing import NewType
@@ -73,12 +74,18 @@ class ExternalCommands:
         self.logger: Logger = getLogger(__name__)
 
     @classmethod
-    def createVirtualEnvironment(cls, version: SemanticVersion) -> str:
+    def createVirtualEnvironment(cls, version: SemanticVersion, projectDirectory: Path) -> str:
         """
-        Assumes the caller has appropriately set the current directory
+        Special call for creating the virtual environment;  Will let the subProcessRun change to the project
+        directory
+
+        Sets a restricted PATH environment so we can create the virtual environment; (othewise, we get
+        'no module venv'
 
         Args:
             version: The Python version
+            projectDirectory:  Where to create the virtual environment
+
 
         Returns:  The name of the subdirectory where the we created the virtual environment
 
@@ -89,11 +96,17 @@ class ExternalCommands:
 
             subdirName:    str           = f'{VIRTUAL_ENVIRONMENT_MARKER}{str(version)}'
             cmd:           str           = f'{MAC_OS_CREATE_VIRTUAL_ENV_CMD} {subdirName}'
-            completedData: CompletedData = ExternalCommands.runCommandReturnOutput(cmd)
-            if completedData.status == 0:
+
+            env: Dict = {
+                'PATH': '/opt/homebrew/bin',
+            }
+            completedProcess: CompletedProcess = subProcessRun([cmd], shell=True, env=env, cwd=projectDirectory,
+                                                               capture_output=True, text=True, check=False)
+
+            if completedProcess.returncode == 0:
                 pass
             else:
-                raise UnableToCreateVirtualEnvironment(stderr=CmdOutput(completedData.stderr))
+                raise UnableToCreateVirtualEnvironment(stderr=CmdOutput(completedProcess.stderr))
         else:
             assert False, 'Oops, I only work on Mac OS'
 

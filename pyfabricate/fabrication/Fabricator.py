@@ -20,11 +20,12 @@ from os import chdir as osChDir
 
 from pathlib import Path
 
-from codeallybasic.ConfigurationLocator import ConfigurationLocator
-from codeallybasic.ResourceManager import ResourceManager
 from wx import CENTER
 from wx import MessageDialog
 from wx import OK
+
+from codeallybasic.ConfigurationLocator import ConfigurationLocator
+from codeallybasic.ResourceManager import ResourceManager
 
 from pyfabricate.Constants import APPLICATION_NAME
 from pyfabricate.Constants import TEMPLATES_DIRECTORY_NAME
@@ -289,9 +290,9 @@ class Fabricator:
 
     def _createProjectVirtualEnvironment(self):
 
-        osChDir(self._projectPath)
+        # osChDir(self._projectPath)
         try:
-            virtualEnv: str = ExternalCommands.createVirtualEnvironment(version=self._projectDetails.pythonVersion)
+            virtualEnv: str = ExternalCommands.createVirtualEnvironment(version=self._projectDetails.pythonVersion, projectDirectory=self._projectPath)
 
             self._progressCallback(f'Created virtual environment for {self._projectDetails.pythonVersion}')
             self._progressCallback(f'{virtualEnv}')
