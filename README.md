@@ -4,30 +4,7 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
-# Introduction
-
-```
-
-# Overview
-
-The basic command structure is:
-
-```bash
-
-```
-
-
-A simple example:
-
-```bash
-
-```
-
-# Installation
-
-```bash
-pip install pyfabricate
-```
+See the article [here](https://dev.to/hasii2011/python-project-creation-on-mac-os-x-4gom-temp-slug-4439082?preview=f5b7ebbf15995943b31fe43ace29b6d68258ddae29f11da388ae309ceffc4058796d380a008cd3d37405e73bdc50cc07c6288ff46feca81f5dfb1abd)
 
 ___
 
