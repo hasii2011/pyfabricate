@@ -6,13 +6,16 @@ from logging import getLogger
 
 from os import getenv as osGetEnv
 
+from wx import ClientDC
 from wx import CommandEvent
 from wx import DEFAULT_FRAME_STYLE
 from wx import FRAME_FLOAT_ON_PARENT
 from wx import FRAME_TOOL_WINDOW
 from wx import HSCROLL
+from wx import ID_ABOUT
 from wx import ID_ANY
 from wx import ID_EXIT
+from wx import Icon
 from wx import Menu
 from wx import MenuBar
 from wx import Point
@@ -20,15 +23,26 @@ from wx import EVT_MENU
 from wx import Size
 from wx import TE_MULTILINE
 
+from wx import Yield as wxYield
+
+from wx.adv import AboutBox
+from wx.adv import AboutDialogInfo
+
 from wx.lib.sized_controls import SizedFrame
 from wx.lib.sized_controls import SizedPanel
 
+from wx.lib.wordwrap import wordwrap
+
 from wx.richtext import RichTextCtrl
+
+from codeallybasic.SecureConversions import SecureConversions
 
 from pyfabricate.fabrication.Fabricator import Fabricator
 from pyfabricate.ProjectDetails import ProjectDetails
 
-from codeallybasic.SecureConversions import SecureConversions
+from pyfabricate import __version__ as pyFabricateVersion
+
+from pyfabricate.resources.images.AppLogo import embeddedImage as appLogo
 
 WINDOW_WIDTH:  int = 800
 WINDOW_HEIGHT: int = 400
@@ -37,6 +51,17 @@ MINI_WINDOW_WIDTH:  int = 100
 MINI_WINDOW_HEIGHT: int = 50
 
 APP_MODE: str = 'APP_MODE'
+
+DESCRIPTION: str = """
+PyFabricate is a Mac OS X application that 
+simplifies the creation of Python projects.  
+
+Since I authored it, obviously it is an 
+opinionated version of what I think a Python 
+project should look like. 
+"""
+
+DESCRIPTION_WIDTH: int = 400
 
 
 class PyFabricateFrame(SizedFrame):
@@ -75,6 +100,7 @@ class PyFabricateFrame(SizedFrame):
 
         self.SetSize(Size(WINDOW_WIDTH, WINDOW_HEIGHT))
         self.Layout()
+        wxYield()
 
         self._addLineToConsole('Operations are running')
         self._addLineToConsole(f'{projectDetails}')
@@ -86,17 +112,38 @@ class PyFabricateFrame(SizedFrame):
         fileMenu: Menu = Menu()
 
         fileMenu.Append(ID_EXIT, "E&xit\tAlt+Q", "Exit the program")
+        fileMenu.Append(ID_ABOUT, '&About', 'Tell you about me')
 
         menuBar: MenuBar = MenuBar()
         menuBar.Append(fileMenu, "&File")
 
         self.Bind(EVT_MENU, self._onFileExit, id=ID_EXIT)
+        self.Bind(EVT_MENU, self._onAbout,    id=ID_ABOUT)
 
         self.SetMenuBar(menuBar)
 
     # noinspection PyUnusedLocal
     def _onFileExit(self, event: CommandEvent):
         self.Close(True)
+
+    # noinspection PyUnusedLocal
+    def _onAbout(self, event: CommandEvent):
+
+        icon:         Icon   = Icon()
+        icon.CopyFromBitmap(bmp=appLogo.GetBitmap())
+
+        # First we create and fill the info object
+        info: AboutDialogInfo = AboutDialogInfo()
+
+        info.Name = 'PyFabricate'
+        info.Version = pyFabricateVersion
+        info.Copyright = '(C) 2024 Humberto A. Sanchez II <humberto.a.sanchez.ii@gmail.com>'
+        info.Description = wordwrap(DESCRIPTION, DESCRIPTION_WIDTH, ClientDC(self))
+        info.WebSite = ("https://github.com/hasii2011/pyfabricate", "PyFabricate")
+        info.Developers = ['Humberto A. Sanchez II']
+        info.SetIcon(icon)
+
+        AboutBox(info)
 
     def _addLineToConsole(self, text: str):
         """
