@@ -1,6 +1,5 @@
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/hasii2011/pygh2md/tree/master.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/hasii2011/pygh2md/tree/master)
-[![PyPI version](https://badge.fury.io/py/pygh2md.svg)](https://badge.fury.io/py/pygh2md)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/hasii2011/pyfabricate/tree/master.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/hasii2011/pyfabricate/tree/master)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
