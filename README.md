@@ -7,7 +7,7 @@ See the article [here](https://dev.to/hasii2011/python-project-creation-on-mac-o
 
 ___
 
-Written by Humberto A. Sanchez II <mailto@humberto.a.sanchez.ii@gmail.com>, (C) 2024
+Written by <a href="mailto:email@humberto.a.sanchez.ii@gmail.com?subject=Hello Humberto">Humberto A. Sanchez II</a>  (C) 2024
 
 
 ## Note
