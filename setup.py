@@ -10,11 +10,6 @@ from setuptools import setup
 APP = ['pyfabricate/PyFabricateApp.py']
 
 DATA_FILES = [('pyfabricate/resources', ['pyfabricate/resources/loggingConfiguration.json']),]
-#               ('pygitissue2todoist/resources', ['pygitissue2todoist/resources/play.png']),
-#               ('pygitissue2todoist/resources', ['pygitissue2todoist/resources/version.txt']),
-#               ('pygitissue2todoist/resources', ['pygitissue2todoist/resources/packageversions.txt']),
-#               ('pygitissue2todoist/resources', ['pygitissue2todoist/resources/SimpleHelp.html'])
-#               ]
 
 OPTIONS = {}
 
@@ -31,6 +26,7 @@ setup(
     author_email='Humberto.A.Sanchez.II@gmail.com',
     maintainer_email='humberto.a.sanchez.ii@gmail.com',
     description='Create an opinionated Python Project',
+    license='AFFERO',
     options=dict(py2app=dict(
                     plist=dict(
                         CFBundleIdentifier='PyFabricate',
