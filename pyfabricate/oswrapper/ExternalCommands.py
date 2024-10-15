@@ -1,5 +1,4 @@
-from pathlib import Path
-from typing import Dict
+
 from typing import cast
 from typing import List
 from typing import NewType
@@ -8,6 +7,9 @@ from logging import Logger
 from logging import getLogger
 
 from os import linesep as osLineSep
+from os import sep as osSep
+
+from pathlib import Path
 
 from subprocess import CompletedProcess
 
@@ -34,9 +36,10 @@ PYENV_CMD:         str = 'pyenv'
 MAC_OS_PYENV_PATH: str = f'/opt/homebrew/bin'
 MAC_OS_PYENV_CMD:  str = f'{MAC_OS_PYENV_PATH}/{PYENV_CMD} versions'
 
-MAC_OS_PYENV_LOCAL_CMD:   str = 'pyenv local '
+MAC_OS_PYENV_LOCAL_CMD:   str = f'{PYENV_CMD} local '
 
-MAC_OS_CREATE_VIRTUAL_ENV_CMD: str = '/opt/homebrew/bin/python3 -m venv'
+
+MAC_OS_PYENV_PARTIAL_CREATE_VENV: str = '.pyenv/shims/python -m venv '
 
 NON_PYTHON_VERSION:             str = 'system'
 LOCAL_PYTHON_VERSION_INDICATOR: str = '*'
@@ -79,11 +82,14 @@ class ExternalCommands:
         Special call for creating the virtual environment;  Will let the subProcessRun change to the project
         directory
 
-        Sets a restricted PATH environment so we can create the virtual environment; (othewise, we get
-        'no module venv'
+        Since we are using pyenv to manage Python, this method assumes that .createApplicationSpecificPythonVersion()
+        has been called so that pyenv creates the .python_version file
+
+        Additionally, it assumes a standard homebrew pyenv install where pyenv stores it configuration in
+        $HOME/.pyenv
 
         Args:
-            version: The Python version
+            version:           The Python version
             projectDirectory:  Where to create the virtual environment
 
 
@@ -94,13 +100,11 @@ class ExternalCommands:
 
         if platform.startswith(THE_GREAT_MAC_PLATFORM) is True:
 
-            subdirName:    str           = f'{VIRTUAL_ENVIRONMENT_MARKER}{str(version)}'
-            cmd:           str           = f'{MAC_OS_CREATE_VIRTUAL_ENV_CMD} {subdirName}'
+            subdirName: str  = f'{VIRTUAL_ENVIRONMENT_MARKER}{str(version)}'
+            homeDir:    Path = Path.home()
+            cmd:        str  = f'{homeDir}{osSep}{MAC_OS_PYENV_PARTIAL_CREATE_VENV} {subdirName}'
 
-            env: Dict = {
-                'PATH': '/opt/homebrew/bin',
-            }
-            completedProcess: CompletedProcess = subProcessRun([cmd], shell=True, env=env, cwd=projectDirectory,
+            completedProcess: CompletedProcess = subProcessRun([cmd], shell=True, cwd=projectDirectory,
                                                                capture_output=True, text=True, check=False)
 
             if completedProcess.returncode == 0:

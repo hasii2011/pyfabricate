@@ -4,7 +4,7 @@ The following is a directory graphic of a typical Python project which I manuall
 
 ![SampleDocumentStructure](.//SampleDocumentStructure.png)
 
-## Opionated Assumptions
+## Opinionated Assumptions
 
 - The developer uses [HomeBrew](https://brew.sh) to install the opinionated dependencies.
     - Python is managed via pyenv (For use in the created virtual environments)
