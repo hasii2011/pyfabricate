@@ -17,7 +17,6 @@ from subprocess import run as subProcessRun
 
 from platform import platform as osPlatform
 
-
 from semantic_version import Version as SemanticVersion
 
 from pyfabricate.oswrapper.CompletedData import CompletedData
@@ -129,28 +128,6 @@ class ExternalCommands:
             assert False, 'Oops, I only work on Mac OS'
 
         return subdirName
-
-    @classmethod
-    def createApplicationSpecificPythonVersion(cls, version: SemanticVersion):
-        """
-        Assumes the caller has appropriately set the current directory
-
-        Args:
-            version: The Python version
-
-        """
-
-        platform: str = osPlatform(terse=True)
-
-        if platform.startswith(THE_GREAT_MAC_PLATFORM) is True:
-            cmd: str = f'{MAC_OS_PYENV_LOCAL_CMD} {str(version)}'
-            completedData: CompletedData = ExternalCommands.runCommandReturnOutput(cmd)
-            if completedData.status == 0:
-                pass
-            else:
-                raise UnableToSetLocalPythonVersion
-        else:
-            assert False, 'Oops, I only work on Mac OS'
 
     @classmethod
     def getPythonVersions(cls) -> SemanticVersions:

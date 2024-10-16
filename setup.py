@@ -34,8 +34,6 @@ setup(
                         LSEnvironment=dict(
                             APP_MODE='True',
                             PYTHONOPTIMIZE='1',
-                            PYTHONUNBUFFERED='1',
-                            emulate_shell_environment=1,
                         ),
                         LSMultipleInstancesProhibited='True',
                     ),

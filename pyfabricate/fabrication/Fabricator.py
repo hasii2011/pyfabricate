@@ -16,7 +16,6 @@ from importlib.abc import Traversable
 from importlib.resources import files
 
 from os import pathsep as osPathSep
-from os import chdir as osChDir
 
 from pathlib import Path
 
@@ -49,6 +48,8 @@ TESTS_PATH:     Path = Path('tests')
 RESOURCES_PATH: Path = Path('resources')
 
 PACKAGE_DEFINITION_FILENAME: str  = '__init__.py'
+PYTHON_VERSION_FILENAME:     str  = '.python-version'
+
 VERSION_PY_TEMPLATE:         Path = Path('_version.py.template')
 VERSION_VARIABLE:             str  = 'from %s._version import __version__'
 
@@ -146,6 +147,7 @@ class Fabricator:
 
         self._progressCallback(f'Created: {projectPath}')
 
+        self.logger.info(f'Project path created: {projectPath}')
         return projectPath
 
     def _computeSkeletonDirectories(self, projectPath: Path) -> SkeletonDirectories:
@@ -166,6 +168,7 @@ class Fabricator:
         directories.testsModulePath     = directories.projectPath / TESTS_PATH / moduleNamePath
         directories.testsResourcesPath  = directories.projectPath / TESTS_PATH / RESOURCES_PATH
 
+        self.logger.info(f'Skeleton directories computed')
         return directories
 
     def _createSkeletonDirectories(self):
@@ -179,6 +182,8 @@ class Fabricator:
                 directoryPath.mkdir(parents=True, exist_ok=True)
                 self._progressCallback(f'Created: {directoryPath}')
 
+        self.logger.info(f'Skeleton directories created')
+
     def _createPythonPackageFiles(self):
 
         skeletonDictionary: SkeletonDictionary = vars(self._directories)
@@ -190,6 +195,8 @@ class Fabricator:
                 fullPath: Path = self._directories.projectPath / directoryPath / PACKAGE_DEFINITION_FILENAME
                 fullPath.touch()
                 self._progressCallback(f'Created: {fullPath}')
+
+        self.logger.info(f'Python package files created')
 
     def _createVersioningCapabilities(self):
         """
@@ -209,6 +216,7 @@ class Fabricator:
 
         moduleInitPath.write_text(updatedVersionVariable)
         self._progressCallback(f'Updated {moduleInitPath}')
+        self.logger.info(f'Project versioning capability creation complete')
 
     def _createLoggingConfigurationFiles(self):
 
@@ -238,6 +246,7 @@ class Fabricator:
 
         destinationTestPath.write_bytes(templateTestLoggingConfigurationFile.read_bytes())
         self._progressCallback(f'Created: {destinationTestPath}')
+        self.logger.info(f'Logging configuration files created')
 
     def _createCircleCIFile(self):
 
@@ -247,6 +256,7 @@ class Fabricator:
         destinationPath.write_bytes(templateCIFile.read_bytes())
 
         self._progressCallback(f'Created {destinationPath}')
+        self.logger.info(f'Circle CI configuration created')
 
     def _createProjectRootNoSubstitutionFiles(self):
         """
@@ -291,10 +301,19 @@ class Fabricator:
             self._progressCallback(f'Created {destinationPath}')
 
     def _createApplicationSpecificPythonVersion(self):
+        """
+        Manually create .python-version
 
-        osChDir(self._projectPath)
-        ExternalCommands.createApplicationSpecificPythonVersion(version=self._projectDetails.pythonVersion)
+        """
+
+        self.logger.info('Creating application specific version - Start')
+
+        pythonVersionPath: Path = self._directories.projectPath / Path(PYTHON_VERSION_FILENAME)
+        pythonVersionPath.write_text(str(self._projectDetails.pythonVersion))
+
         self._progressCallback(f'Application specific version set to {self._projectDetails.pythonVersion}')
+
+        self.logger.info(f'Creating application specific version - Complete')
 
     def _createProjectVirtualEnvironment(self):
         """
