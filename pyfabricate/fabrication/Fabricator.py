@@ -1,4 +1,4 @@
-
+from datetime import datetime
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -55,6 +55,7 @@ VERSION_VARIABLE:             str  = 'from %s._version import __version__'
 LOGGING_CONFIGURATION_TEMPLATE:      str = 'loggingConfiguration.json.template'
 TEST_LOGGING_CONFIGURATION_TEMPLATE: str = 'testLoggingConfiguration.json.template'
 CIRCLE_CI_TEMPLATE:                  str = 'config.yml.template'
+VENV_CREATION_SCRIPT_TEMPLATE:       str = 'createVirtualEnv.sh.template'
 
 NO_TOKENS_SUBSTITUTION_TEMPLATES: List[Path] = [
     Path('LICENSE.template'),
@@ -76,6 +77,12 @@ TOKEN_OWNER_NAME:     str = 'OWNER_NAME'
 TOKEN_OWNER_EMAIL:    str = 'OWNER_EMAIL'
 TOKEN_DESCRIPTION:    str = 'DESCRIPTION'
 TOKEN_KEYWORDS:       str = 'KEYWORDS'
+
+TOKEN_DAY:             str = 'DAY'
+TOKEN_MONTH_NAME_FULL: str = 'MONTH_NAME_FULL'
+TOKEN_YEAR:            str = 'YEAR'
+
+EXECUTION_PERMISSIONS: int = 0o555      # equivalent to gou+rx
 
 
 @dataclass
@@ -128,7 +135,8 @@ class Fabricator:
         self._createProjectRootNoSubstitutionFiles()
         self._createProjectRootSubstitutionFiles()
         self._createApplicationSpecificPythonVersion()
-        self._createProjectVirtualEnvironment()
+        # self._createProjectVirtualEnvironment()
+        self._createVirtualEnvironmentScript()
 
     def _createProjectDirectory(self) -> Path:
 
@@ -289,8 +297,9 @@ class Fabricator:
         self._progressCallback(f'Application specific version set to {self._projectDetails.pythonVersion}')
 
     def _createProjectVirtualEnvironment(self):
-
-        # osChDir(self._projectPath)
+        """
+        Currently unused see issue - https://github.com/hasii2011/pyfabricate/issues/5 for details.
+        """
         try:
             self._progressCallback(f'Attempting creation of virtual environment for {self._projectDetails.pythonVersion}')
             virtualEnv: str = ExternalCommands.createVirtualEnvironment(version=self._projectDetails.pythonVersion, projectDirectory=self._projectPath)
@@ -303,6 +312,39 @@ class Fabricator:
             dlg = MessageDialog(parent=None, message=f'{e.stderr}', caption='Venv Creation Error ', style=OK | CENTER)
             dlg.ShowModal()
             dlg.Destroy()
+
+    def _createVirtualEnvironmentScript(self):
+        """
+        Modifies the createVirtualEnv.sh.template
+        Moves it to the project directory
+        Fixes the script permissions
+
+        """
+        templateScript:  Path = self._configurationTemplatePath / VENV_CREATION_SCRIPT_TEMPLATE
+        destinationPath: Path = self._directories.projectPath   / Path(VENV_CREATION_SCRIPT_TEMPLATE).stem
+
+        destinationPath.write_bytes(templateScript.read_bytes())
+        self._progressCallback(f'Created {destinationPath}')
+
+        today = datetime.now()
+
+        tokenDict = {
+            TOKEN_PYTHON_VERSION:  self._projectDetails.pythonVersion,
+            TOKEN_DAY:             today.day,
+            TOKEN_MONTH_NAME_FULL: today.strftime("%B"),
+            TOKEN_YEAR:            today.year,
+        }
+        template: Template = Template(destinationPath.read_text())
+        result:   str = template.substitute(tokenDict)
+        #
+        # Write the result back
+        #
+        destinationPath.write_text(result)
+
+        self._progressCallback(f'Do not forget to execute: {destinationPath}')
+
+        destinationPath.chmod(mode=EXECUTION_PERMISSIONS)
+        self._progressCallback(f'Fixed permissions.')
 
     def _copyTemplatesToConfiguration(self, configurationTemplatePath: Path):
         """

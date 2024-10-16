@@ -15,8 +15,6 @@ PyFabricate uses a wizard-like interface to query for the project details.
 - The developer uses [HomeBrew](https://brew.sh) to install the opinionated dependencies.
     - Python is managed via [pyenv](https://github.com/pyenv/pyenv) (For use in the created virtual environments)
     - [direnv](https://github.com/direnv/direnv) is installed (optional)
-    - The developer installed a [HomeBrew](https://brew.sh) version of Python (For creating the virtual environments)
-
 - The project name is the same as the module package name
 
 # Installation
