@@ -39,7 +39,7 @@ MAC_OS_PYENV_CMD:  str = f'{MAC_OS_PYENV_PATH}/{PYENV_CMD} versions'
 MAC_OS_PYENV_LOCAL_CMD:   str = f'{PYENV_CMD} local '
 
 
-MAC_OS_PYENV_PARTIAL_CREATE_VENV: str = '.pyenv/shims/python -m venv '
+MAC_OS_PYTHON_SHIM: str = '.pyenv/shims/python -m venv '
 
 NON_PYTHON_VERSION:             str = 'system'
 LOCAL_PYTHON_VERSION_INDICATOR: str = '*'
@@ -73,8 +73,10 @@ class UnableToCreateVirtualEnvironment(Exception):
 
 
 class ExternalCommands:
+    clsLogger: Logger = getLogger(__name__)
+
     def __init__(self):
-        self.logger: Logger = getLogger(__name__)
+        pass
 
     @classmethod
     def createVirtualEnvironment(cls, version: SemanticVersion, projectDirectory: Path) -> str:
@@ -87,6 +89,12 @@ class ExternalCommands:
 
         Additionally, it assumes a standard homebrew pyenv install where pyenv stores it configuration in
         $HOME/.pyenv
+
+        TODO:  This code does not execute correctly when executed from a standard Mac OS X application.
+
+        See issue: https://github.com/hasii2011/pyfabricate/issues/5 for details.
+
+        However, it does work when it is run from inside PyCharm
 
         Args:
             version:           The Python version
@@ -102,11 +110,17 @@ class ExternalCommands:
 
             subdirName: str  = f'{VIRTUAL_ENVIRONMENT_MARKER}{str(version)}'
             homeDir:    Path = Path.home()
-            cmd:        str  = f'{homeDir}{osSep}{MAC_OS_PYENV_PARTIAL_CREATE_VENV} {subdirName}'
+            cmd:        str  = f'{homeDir}{osSep}{MAC_OS_PYTHON_SHIM} {subdirName}'
+            ExternalCommands.clsLogger.info(f'{cmd=}')
 
-            completedProcess: CompletedProcess = subProcessRun([cmd], shell=True, cwd=projectDirectory,
-                                                               capture_output=True, text=True, check=False)
-
+            completedProcess: CompletedProcess = subProcessRun([cmd],
+                                                               shell=True,
+                                                               cwd=projectDirectory,
+                                                               capture_output=True,
+                                                               text=True,
+                                                               check=False,
+                                                               timeout=9)
+            ExternalCommands.clsLogger.info(f'{completedProcess.returncode=}')
             if completedProcess.returncode == 0:
                 pass
             else:

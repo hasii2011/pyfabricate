@@ -2,8 +2,9 @@
     "version": 1,
     "disable_existing_loggers": "False",
     "formatters": {
-        "simple": {
-            "format": "%(asctime)s.%(msecs)03d %(levelname)s %(module)s: %(message)s"
+        "fabricateSimple": {
+            "format": "%(asctime)s.%(msecs)03d %(levelname)s %(module)s: %(message)s",
+            "datefmt" : "%H:%M:%S"
         },
         "testSimple": {
             "format": "%(levelname)s: %(module)s: %(message)s"
@@ -14,6 +15,15 @@
             "class": "logging.StreamHandler",
             "formatter": "testSimple",
             "stream": "ext://sys.stdout"
+        },
+         "rotatingFileHandler": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "fabricateSimple",
+            "filename": "/tmp/pyfabricate.log",
+            "mode": "a",
+            "maxBytes": 81920,
+            "backupCount": 5,
+            "encoding": "utf-8"
         }
     },
     "loggers": {
@@ -24,10 +34,12 @@
         },
         "__main__": {
             "level": "INFO",
+            "handlers": ["rotatingFileHandler"],
             "propagate": "False"
         },
-        "gh2md": {
+        "pyfabricate": {
             "level": "INFO",
+            "handlers": ["rotatingFileHandler"],
             "propagate": "False"
         }
     }

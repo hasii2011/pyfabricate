@@ -166,3 +166,4 @@ class PyFabricateFrame(SizedFrame):
         self._console.Newline()
         carrotPosition: float = self._console.GetCaretPosition()        # Hee, hee
         self._console.ShowPosition(carrotPosition)
+        wxYield()

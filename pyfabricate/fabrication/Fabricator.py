@@ -292,12 +292,15 @@ class Fabricator:
 
         # osChDir(self._projectPath)
         try:
+            self._progressCallback(f'Attempting creation of virtual environment for {self._projectDetails.pythonVersion}')
             virtualEnv: str = ExternalCommands.createVirtualEnvironment(version=self._projectDetails.pythonVersion, projectDirectory=self._projectPath)
 
             self._progressCallback(f'Created virtual environment for {self._projectDetails.pythonVersion}')
             self._progressCallback(f'{virtualEnv}')
         except UnableToCreateVirtualEnvironment as e:
-            dlg = MessageDialog(parent=None, message=f'{e.stderr}', caption='Virtual Environment', style=OK | CENTER)
+            self.logger.error(f'Error in virtual environment creation')
+            self.logger.error(f'{e.stderr}')
+            dlg = MessageDialog(parent=None, message=f'{e.stderr}', caption='Venv Creation Error ', style=OK | CENTER)
             dlg.ShowModal()
             dlg.Destroy()
 
