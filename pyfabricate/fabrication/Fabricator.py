@@ -56,7 +56,6 @@ VENV_CREATION_SCRIPT_TEMPLATE:       str = 'createVirtualEnv.sh.template'
 
 NO_TOKENS_SUBSTITUTION_TEMPLATES: List[Path] = [
     Path('LICENSE.template'),
-    Path('.mypi.ini.template'),
     Path('requirements.txt.template'),
 ]
 
@@ -65,6 +64,7 @@ TOKEN_SUBSTITUTION_TEMPLATES: List[Path] = [
     Path('.gitignore.template'),
     Path('pyproject.toml.template'),
     Path('.envrc.template'),
+    Path('.mypi.ini.template'),
 ]
 
 # These values the the string names that we substitute
