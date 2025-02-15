@@ -4,7 +4,7 @@ from logging import getLogger
 
 from wx.lib.sized_controls import SizedPanel
 
-from pyfabricate.components.DirectorySelector import DirectorySelector
+from codeallyadvanced.ui.widgets.DirectorySelector import DirectorySelector
 
 from tests.mage.MageBase import MageBase
 

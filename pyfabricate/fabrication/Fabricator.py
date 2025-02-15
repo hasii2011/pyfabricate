@@ -11,10 +11,6 @@ from string import Template
 
 from dataclasses import dataclass
 
-from importlib.abc import Traversable
-
-from importlib.resources import files
-
 from os import pathsep as osPathSep
 
 from pathlib import Path
@@ -379,31 +375,10 @@ class Fabricator:
 
             configurationTemplatePath.mkdir(parents=True, exist_ok=True)
 
-            resourcePath: Path = self._computeResourcePath(resourcePath=TEMPLATE_RESOURCE_PATH, packageName=TEMPLATE_PACKAGE_NAME)
+            resourcePath: Path = ResourceManager.computeResourcePath(resourcePath=TEMPLATE_RESOURCE_PATH, packageName=TEMPLATE_PACKAGE_NAME)
 
             for fqFileName in resourcePath.rglob('*.template'):
 
                 destinationPath: Path = configurationTemplatePath / fqFileName.name
 
                 destinationPath.write_bytes(fqFileName.read_bytes())
-
-    def _computeResourcePath(self, resourcePath: str, packageName: str) -> Path:
-        """
-        TODO:  This belongs in codeallybasic as part of the ResourceManager
-
-        Assume we are in an app;  If not, then we are in development
-        Args:
-            resourcePath:  OS Path that matches the package name
-            packageName:   The package from which to retrieve the resource
-
-        Returns:  The fully qualified path
-        """
-        try:
-            from os import environ
-            pathToResources: str = environ[f'{ResourceManager.RESOURCE_ENV_VAR}']
-            fqFileName:      Path = Path(f'{pathToResources}/{resourcePath}/')
-        except KeyError:
-            traversable: Traversable = files(packageName)
-            fqFileName = Path(str(traversable))
-
-        return fqFileName

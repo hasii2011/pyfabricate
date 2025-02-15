@@ -24,7 +24,7 @@ setup(
     url='https://github.com/hasii2011/pyfabricate',
     author='Humberto A. Sanchez II',
     author_email='Humberto.A.Sanchez.II@gmail.com',
-    maintainer_email='humberto.a.sanchez.ii@gmail.com',
+    maintainer_email='Humberto.A.Sanchez.II@gmail.com',
     description='Create an opinionated Python Project',
     license='AFFERO',
     options=dict(py2app=dict(
@@ -40,5 +40,5 @@ setup(
             ),
     ),
     setup_requires=['py2app'],
-    install_requires=['codeallybasic>=1.4.0', 'wxPython>=4.2.2', 'semantic-version>=2.10.0']
+    install_requires=['codeallybasic>=1.10.0', 'codeallyadvanced>=1.4.1', 'wxPython>=4.2.2', 'semantic-version>=2.10.0']
 )

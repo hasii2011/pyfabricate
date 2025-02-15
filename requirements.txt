@@ -1,9 +1,7 @@
 wheel==0.43.0
 setuptools===70.1.1
-# twine==5.0.0
-# build == 1.2.2
 
-# the following necessary when building the
+# the following is necessary when building the
 # application with py2App
 chardet==5.2.0
 
@@ -11,10 +9,11 @@ mypy == 1.11.2
 html-testRunner~=1.2.1
 
 # So Circle CI works
-buildlackey==1.6.3
+buildlackey==1.8.1
 
 click == 8.1.7
 PyGithub == 2.4.0
 semantic-version>=2.10.0
-codeallybasic>=1.4.0
+codeallybasic>=1.10.0
+codeallyadvanced==1.4.1
 wxPython==4.2.2

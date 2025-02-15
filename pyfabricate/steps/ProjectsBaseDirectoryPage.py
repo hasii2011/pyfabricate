@@ -1,14 +1,16 @@
 
 from logging import Logger
 from logging import getLogger
+
 from pathlib import Path
 
 from wx import StaticText
+
 from wx.lib.sized_controls import SizedPanel
 
-from pyfabricate.steps.PageBase import PageBase
+from codeallyadvanced.ui.widgets.DirectorySelector import DirectorySelector
 
-from pyfabricate.components.DirectorySelector import DirectorySelector
+from pyfabricate.steps.PageBase import PageBase
 
 
 class ProjectsBaseDirectoryPage(PageBase):
