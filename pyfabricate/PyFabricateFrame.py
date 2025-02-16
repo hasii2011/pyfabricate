@@ -37,6 +37,7 @@ from wx.richtext import RichTextCtrl
 
 from codeallybasic.SecureConversions import SecureConversions
 
+from pyfabricate.fabrication.FabricationError import FabricationError
 from pyfabricate.fabrication.Fabricator import Fabricator
 from pyfabricate.ProjectDetails import ProjectDetails
 
@@ -105,8 +106,11 @@ class PyFabricateFrame(SizedFrame):
         self._addLineToConsole('Operations are running')
         self._addLineToConsole(f'{projectDetails}')
 
-        fabricator: Fabricator = Fabricator(projectDetails=projectDetails, progressCallback=self._addLineToConsole)
-        fabricator.fabricate()
+        try:
+            fabricator: Fabricator = Fabricator(projectDetails=projectDetails, progressCallback=self._addLineToConsole)
+            fabricator.fabricate()
+        except FabricationError as fe:
+            self.logger.error(f'{fe.message}')
 
     def _makeMenus(self):
         fileMenu: Menu = Menu()

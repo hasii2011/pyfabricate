@@ -1,4 +1,4 @@
-from datetime import datetime
+
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -6,6 +6,8 @@ from typing import cast
 
 from logging import Logger
 from logging import getLogger
+
+from datetime import datetime
 
 from string import Template
 
@@ -16,14 +18,17 @@ from os import pathsep as osPathSep
 from pathlib import Path
 
 from wx import CENTER
-from wx import MessageDialog
+from wx import ICON_ERROR
 from wx import OK
+
+from wx import MessageDialog
 
 from codeallybasic.ConfigurationLocator import ConfigurationLocator
 from codeallybasic.ResourceManager import ResourceManager
 
 from pyfabricate.Constants import APPLICATION_NAME
 from pyfabricate.Constants import TEMPLATES_DIRECTORY_NAME
+from pyfabricate.fabrication.FabricationError import FabricationError
 from pyfabricate.oswrapper.ExternalCommands import ExternalCommands
 from pyfabricate.oswrapper.ExternalCommands import UnableToCreateVirtualEnvironment
 
@@ -139,7 +144,15 @@ class Fabricator:
 
         projectPath: Path = self._projectDetails.baseDirectory / self._projectDetails.name
 
-        projectPath.mkdir(parents=True, exist_ok=True)
+        try:
+            projectPath.mkdir(parents=True, exist_ok=False)
+        except FileExistsError:
+            booBoo: MessageDialog = MessageDialog(parent=None,
+                                                  message='We do not want to overwrite a potential project',
+                                                  caption='Project path already exists',
+                                                  style=OK | ICON_ERROR)
+            booBoo.ShowModal()
+            raise FabricationError(message=f'Project path already exists. {projectPath}')
 
         self._progressCallback(f'Created: {projectPath}')
 

@@ -8,7 +8,12 @@
         },
         "testSimple": {
             "format": "%(levelname)s: %(module)s: %(message)s"
+        },
+        "bestFormat": {
+            "format": "%(asctime)s.%(msecs)03d %(levelname)-6s %(name)-15s - %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S"
         }
+
     },
     "handlers": {
         "consoleHandler": {
@@ -18,7 +23,7 @@
         },
          "rotatingFileHandler": {
             "class": "logging.handlers.RotatingFileHandler",
-            "formatter": "fabricateSimple",
+            "formatter": "bestFormat",
             "filename": "/tmp/pyfabricate.log",
             "mode": "a",
             "maxBytes": 81920,
