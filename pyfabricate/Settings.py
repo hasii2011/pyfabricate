@@ -39,4 +39,3 @@ class Settings(DynamicConfiguration, metaclass=SingletonV3):
     def __init__(self):
 
         super().__init__(baseFileName=f'{APPLICATION_NAME}.ini', moduleName=APPLICATION_NAME, sections=SETTINGS_SECTIONS)
-
