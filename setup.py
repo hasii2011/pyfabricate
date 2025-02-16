@@ -19,7 +19,7 @@ setup(
     app=APP,
     packages=find_packages(include=['pyfabricate.*', 'mage.*']),
     include_package_data=True,
-    data_files = DATA_FILES,
+    data_files=DATA_FILES,
     zip_safe=False,
     url='https://github.com/hasii2011/pyfabricate',
     author='Humberto A. Sanchez II',
