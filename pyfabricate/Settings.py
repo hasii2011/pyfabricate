@@ -20,6 +20,7 @@ def toPath(pathString: str) -> Path:
 PROJECT_PROPERTIES: ValueDescriptions = ValueDescriptions(
     {
         KeyName('name'):          ValueDescription(defaultValue='projectName'),
+        KeyName('moduleName'):    ValueDescription(defaultValue='moduleName'),
         KeyName('ownerName'):     ValueDescription(defaultValue='Humberto A. Sanchez II'),
         KeyName('ownerEmail'):    ValueDescription(defaultValue='Humberto.A.Sanchez.II@gmail.com'),
         KeyName('description'):   ValueDescription(defaultValue='This is a good project'),

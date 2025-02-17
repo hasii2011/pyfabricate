@@ -3,7 +3,7 @@ requires = ['setuptools', 'wheel']
 build-backend = "setuptools.build_meta"
 
 [project]
-name='$PROJECT_NAME'
+name='$MODULE_NAME'
 dynamic = ["version"]
 description = '$DESCRIPTION'
 readme = "README.md"
@@ -13,7 +13,7 @@ maintainers = [{name = '$OWNER_NAME', email = '$OWNER_EMAIL'}]
 keywords = ['$KEYWORDS']
 
 dependencies = [
-  'codeallybasic>=1.4.0',
+  'codeallybasic>=1.10.0',
 ]
 
 [project.urls]
@@ -24,11 +24,11 @@ Repository = 'https://github.com/hasii2011/$PROJECT_NAME'
 where = ['src']
 
 [tool.setuptools.package-data]
-'$PROJECT_NAME.resources' = ['loggingConfiguration.json']
+'$MODULE_NAME.resources' = ['loggingConfiguration.json']
 
 [tool.setuptools.dynamic]
-version = {attr = '$PROJECT_NAME.__version__'}
+version = {attr = '$MODULE_NAME.__version__'}
 
 [project.scripts]
 
-pyfabricate = "$PROJECT_NAME.MainClass:commandHandler"
+pyfabricate = "$MODULE_NAME.MainClass:commandHandler"

@@ -1,6 +1,6 @@
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/hasii2011/$PROJECT_NAME/tree/master.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/hasii2011/$PROJECT_NAME/tree/master)
-[![PyPI version](https://badge.fury.io/py/$PROJECT_NAME.svg)](https://badge.fury.io/py/$PROJECT_NAME)
+[![PyPI version](https://badge.fury.io/py/$MODULE_NAME.svg)](https://badge.fury.io/py/$MODULE_NAME)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
@@ -26,7 +26,7 @@ A simple example:
 # Installation
 
 ```bash
-pip install $PROJECT_NAME
+pip install $MODULE_NAME
 ```
 
 ___

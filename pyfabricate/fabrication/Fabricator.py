@@ -76,6 +76,7 @@ TOKEN_SUBSTITUTION_TEMPLATES: List[Path] = [
 
 # These values the the string names that we substitute
 TOKEN_PROJECT_NAME:          str = 'PROJECT_NAME'
+TOKEN_MODULE_NAME:           str = 'MODULE_NAME'
 TOKEN_PYTHON_VERSION:        str = 'PYTHON_VERSION'
 TOKEN_OWNER_NAME:            str = 'OWNER_NAME'
 TOKEN_OWNER_EMAIL:           str = 'OWNER_EMAIL'
@@ -166,7 +167,7 @@ class Fabricator:
 
         self._progressCallback('Computing project skeleton')
 
-        moduleNamePath: Path = Path(f'{self._projectDetails.name.lower()}')
+        moduleNamePath: Path = Path(f'{self._projectDetails.moduleName.lower()}')
 
         directories: SkeletonDirectories = SkeletonDirectories()
 
@@ -292,7 +293,8 @@ class Fabricator:
         simplePythonVersion: str             = f'{pythonVersion.major}.{pythonVersion.minor}'
         tokenDict = {
             TOKEN_PYTHON_VERSION:        self._projectDetails.pythonVersion,
-            TOKEN_PROJECT_NAME:          self._projectDetails.name.lower(),
+            TOKEN_PROJECT_NAME:          self._projectDetails.name,
+            TOKEN_MODULE_NAME:           self._projectDetails.moduleName,
             TOKEN_OWNER_NAME:            self._projectDetails.ownerName,
             TOKEN_OWNER_EMAIL:           self._projectDetails.ownerEmail,
             TOKEN_DESCRIPTION:           self._projectDetails.description,
