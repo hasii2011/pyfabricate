@@ -40,10 +40,12 @@ MAC_OS_PYENV_LOCAL_CMD:   str = f'{PYENV_CMD} local '
 
 MAC_OS_PYTHON_SHIM: str = '.pyenv/shims/python -m venv '
 
-NON_PYTHON_VERSION:             str = 'system'
-LOCAL_PYTHON_VERSION_INDICATOR: str = '*'
+NON_PYTHON_VERSION:               str = 'system'
+DEFAULT_PYTHON_VERSION_INDICATOR: str = '*'     # Maybe be global or set as local
 
 CmdOutput = NewType('CmdOutput', List[str])
+
+DEFAULT_PYTHON_VERSION_IDX: int = 1
 
 
 class UnableToRetrievePythonVersionsException(Exception):
@@ -78,7 +80,7 @@ class ExternalCommands:
         pass
 
     @classmethod
-    def createVirtualEnvironment(cls, version: SemanticVersion, projectDirectory: Path) -> str:
+    def createVirtualEnvironment(cls, version: SemanticVersion, projectDirectory: Path) -> str | None:
         """
         Special call for creating the virtual environment;  Will let the subProcessRun change to the project
         directory
@@ -145,9 +147,14 @@ class ExternalCommands:
             for outputLine in completedData.stdout:
                 trimmedLine: str = outputLine.strip()
 
-                if trimmedLine != NON_PYTHON_VERSION and not trimmedLine.startswith(LOCAL_PYTHON_VERSION_INDICATOR):
-                    version: SemanticVersion = SemanticVersion(trimmedLine)
-                    # print(f'{version=}')
+                if trimmedLine.startswith(DEFAULT_PYTHON_VERSION_INDICATOR):
+                    splitLines:        List[str]       = trimmedLine.split(sep=' ')
+                    defaultVersionStr: str             = splitLines[DEFAULT_PYTHON_VERSION_IDX]
+
+                    version:           SemanticVersion = SemanticVersion(defaultVersionStr)
+                    pythonVersions.append(version)
+                elif trimmedLine != NON_PYTHON_VERSION:
+                    version = SemanticVersion(trimmedLine)
                     pythonVersions.append(version)
         else:
             raise UnableToRetrievePythonVersionsException(stderr=cast(CmdOutput, completedData.stderr))
