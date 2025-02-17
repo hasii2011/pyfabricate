@@ -17,6 +17,8 @@ from os import pathsep as osPathSep
 
 from pathlib import Path
 
+from semantic_version import Version as SemanticVersion
+
 from wx import CENTER
 from wx import ICON_ERROR
 from wx import OK
@@ -73,12 +75,13 @@ TOKEN_SUBSTITUTION_TEMPLATES: List[Path] = [
 ]
 
 # These values the the string names that we substitute
-TOKEN_PROJECT_NAME:   str = 'PROJECT_NAME'
-TOKEN_PYTHON_VERSION: str = 'PYTHON_VERSION'
-TOKEN_OWNER_NAME:     str = 'OWNER_NAME'
-TOKEN_OWNER_EMAIL:    str = 'OWNER_EMAIL'
-TOKEN_DESCRIPTION:    str = 'DESCRIPTION'
-TOKEN_KEYWORDS:       str = 'KEYWORDS'
+TOKEN_PROJECT_NAME:          str = 'PROJECT_NAME'
+TOKEN_PYTHON_VERSION:        str = 'PYTHON_VERSION'
+TOKEN_OWNER_NAME:            str = 'OWNER_NAME'
+TOKEN_OWNER_EMAIL:           str = 'OWNER_EMAIL'
+TOKEN_DESCRIPTION:           str = 'DESCRIPTION'
+TOKEN_KEYWORDS:              str = 'KEYWORDS'
+TOKEN_SIMPLE_PYTHON_VERSION: str = 'SIMPLE_PYTHON_VERSION'
 
 TOKEN_DAY:             str = 'DAY'
 TOKEN_MONTH_NAME_FULL: str = 'MONTH_NAME_FULL'
@@ -285,25 +288,30 @@ class Fabricator:
         """
 
         """
+        pythonVersion:       SemanticVersion = self._projectDetails.pythonVersion
+        simplePythonVersion: str             = f'{pythonVersion.major}.{pythonVersion.minor}'
         tokenDict = {
-            TOKEN_PYTHON_VERSION: self._projectDetails.pythonVersion,
-            TOKEN_PROJECT_NAME:   self._projectDetails.name.lower(),
-            TOKEN_OWNER_NAME:     self._projectDetails.ownerName,
-            TOKEN_OWNER_EMAIL:    self._projectDetails.ownerEmail,
-            TOKEN_DESCRIPTION:    self._projectDetails.description,
-            TOKEN_KEYWORDS:       self._projectDetails.keywords,
+            TOKEN_PYTHON_VERSION:        self._projectDetails.pythonVersion,
+            TOKEN_PROJECT_NAME:          self._projectDetails.name.lower(),
+            TOKEN_OWNER_NAME:            self._projectDetails.ownerName,
+            TOKEN_OWNER_EMAIL:           self._projectDetails.ownerEmail,
+            TOKEN_DESCRIPTION:           self._projectDetails.description,
+            TOKEN_KEYWORDS:              self._projectDetails.keywords,
+            TOKEN_SIMPLE_PYTHON_VERSION: simplePythonVersion,
         }
         for templateFile in TOKEN_SUBSTITUTION_TEMPLATES:
             templatePath:    Path = self._configurationTemplatePath / templateFile
             destinationPath: Path = self._directories.projectPath / templateFile.stem
+            #
             # Copy the template
+            #
             destinationPath.write_bytes(templatePath.read_bytes())
             #
             # Make the substitutions
-
+            #
             template: Template = Template(destinationPath.read_text())
             result:   str      = template.substitute(tokenDict)
-
+            #
             # Write the result back
             #
             destinationPath.write_text(result)

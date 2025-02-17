@@ -1,6 +1,6 @@
 
 [mypy]
-python_version = $PYTHON_VERSION
+python_version = $SIMPLE_PYTHON_VERSION
 pretty = True
 warn_unused_ignores = True
 implicit_optional = True
